@@ -16,30 +16,33 @@ public class Guess {
         int maxAttempts = 10;
         System.out.println("Я загадал число. У тебя " + maxAttempts + " попыток угадать.");
 
-        Scanner sc = new Scanner(System.in);
-        int counter = 0;
         boolean isGuessed = false;
-        while (counter < maxAttempts) {
-            counter++;
-            int input = sc.nextInt();
+        
+        try ( Scanner sc = new Scanner(System.in)) {
+            int counter = 0;
+            
+            while (counter < maxAttempts) {
+                counter++;
+                int input = sc.nextInt();
 
-            if (input != number) {
-                if (input < number) {
-                    System.out.printf("Моё число больше. Осталось %d попыток\n", maxAttempts - counter);
+                if (input != number) {
+                    if (input < number) {
+                        System.out.printf("Моё число больше. Осталось %d попыток\n", maxAttempts - counter);
+                    } else {
+                        System.out.printf("Моё число меньше. Осталось %d попыток\n", maxAttempts - counter);
+                    }
                 } else {
-                    System.out.printf("Моё число меньше. Осталось %d попыток\n", maxAttempts - counter);
+                    System.out.printf("Ты угадал число с %d-ой попытки\n", counter);
+                    isGuessed = true;
+                    break;
                 }
-            } else {
-                System.out.printf("Ты угадал число с %d-ой попытки\n", counter);
-                isGuessed = true;
-                break;
             }
         }
 
         if (!isGuessed) {
             System.out.println("Ты не угадал");
         }
-        
+
     }
 
 }
