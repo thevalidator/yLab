@@ -14,15 +14,15 @@ public class Pell {
         try ( Scanner scanner = new Scanner(System.in)) {
             int n = scanner.nextInt();
 
-            int prev2 = 0;
-            int prev1 = 1;
+            long prev2 = 0;
+            long prev1 = 1;
 
             if (n == 0) {
                 System.out.println(prev2);
             } else if (n == 1) {
                 System.out.println(prev1);
             } else {
-                int tmp = 0;
+                long tmp = 0;
                 for (int i = 1; i < n; i++) {
                     tmp = prev1 * 2 + prev2;
                     prev2 = prev1;
