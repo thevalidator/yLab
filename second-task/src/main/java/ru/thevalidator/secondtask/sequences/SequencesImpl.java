@@ -66,7 +66,7 @@ public class SequencesImpl implements Sequences {
 
             if (n > 0) {
                 System.out.println(value);
-                for (int i = 2; i < n; i++) {
+                for (int i = 2; i < n + 1; i++) {
                     value = BigInteger.valueOf(i).pow(exponent);
                     System.out.println(value);
                 }
