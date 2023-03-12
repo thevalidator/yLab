@@ -4,60 +4,65 @@
 
 package ru.thevalidator.secondtask.statsaccumulator;
 
-public class StatsAccumulatorImpl implements StatsAccumulator {
-    
-    int count;
-    private Integer max;
-    private Integer min;
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class StatsAccumulatorUsingListImpl implements StatsAccumulator {
+
+    private List<Integer> numbers;
+    private int maxIndex;
+    private int minIndex;
     private long sum;
 
-    public StatsAccumulatorImpl() {
-        max = null;
-        min = null;
+    public StatsAccumulatorUsingListImpl() {
+        numbers = new ArrayList<>();
+        maxIndex = -1;
+        minIndex = -1;
         sum = 0;        
     }
 
     @Override
     public void add(int value) {
+        numbers.add(value);
         sum = Math.addExact(sum, value);
         compareForMinAndMax(value);
-        count++;
     }
 
     @Override
     public int getMin() {
-        if (min == null) {
+        if (minIndex < 0) {
             return Integer.MAX_VALUE;
         } else {
-            return min;
+            return numbers.get(minIndex);
         }
     }
 
     @Override
     public int getMax() {
-        if (max == null) {
+        if (maxIndex < 0) {
             return Integer.MIN_VALUE;
         } else {
-            return max;
+            return numbers.get(maxIndex);
         }
     }
 
     @Override
     public int getCount() {
-        return count;
+        return numbers.size();
     }
 
     @Override
     public Double getAvg() {
-        return count == 0 ? 0. : ((double) sum) / count;
+        return numbers.isEmpty() ? 0. : ((double) sum) / numbers.size();
     }
 
     private void compareForMinAndMax(int value) {
         if (value >= getMax()) {
-            max = value;
+            maxIndex = numbers.size() - 1;
         }
         if (value <= getMin()) {
-            min = value;
+            minIndex = numbers.size() - 1;
         }
     }
 

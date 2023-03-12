@@ -15,29 +15,29 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author thevalidator <the.validator@yandex.ru>
  */
 public class StatsAccumulatorImplTest {
-    
+
     static StatsAccumulatorImpl instance;
-    
+
     public StatsAccumulatorImplTest() {
     }
-    
+
     @BeforeAll
     public static void setUpClass() {
     }
-    
+
     @AfterAll
     public static void tearDownClass() {
     }
-    
+
     @BeforeEach
     public void setUp() {
         instance = new StatsAccumulatorImpl();
     }
-    
+
     @AfterEach
     public void tearDown() {
     }
-    
+
     @Test
     public void testIfEmpty() {
         assertAll(
@@ -59,7 +59,7 @@ public class StatsAccumulatorImplTest {
                 () -> assertEquals(1., instance.getAvg())
         );
     }
-    
+
     @Test
     public void testAddThreeNumbers() {
         int value1 = -5;
@@ -75,7 +75,7 @@ public class StatsAccumulatorImplTest {
                 () -> assertEquals(0., instance.getAvg())
         );
     }
-    
+
     @Test
     public void testAdd() {
         instance.add(10);
@@ -117,5 +117,18 @@ public class StatsAccumulatorImplTest {
         Double result = instance.getAvg();
         assertEquals(expResult, result);
     }
-    
+
+    @Test
+    public void testGetOverflow() {
+        Exception exception = assertThrows(ArithmeticException.class, ()
+                -> {
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < Integer.MAX_VALUE; j++) {
+                    instance.add(Integer.MAX_VALUE);
+                }
+            }
+        });
+        assertEquals("long overflow", exception.getMessage());
+    }
+
 }
