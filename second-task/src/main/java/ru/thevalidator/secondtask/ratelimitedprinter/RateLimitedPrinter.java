@@ -17,8 +17,7 @@ public class RateLimitedPrinter {
     }
 
     public void print(String message) {
-        long now = System.currentTimeMillis();
-        if (interval == 0 || now - timestamp > interval) {
+        if (interval <= 0 || System.currentTimeMillis() - timestamp > interval) {
             System.out.println(message);
             timestamp = System.currentTimeMillis();
         }
