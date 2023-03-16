@@ -6,7 +6,7 @@ package ru.thevalidator.secondtask.statsaccumulator;
 
 public class StatsAccumulatorImpl implements StatsAccumulator {
     
-    int count;
+    private int count;
     private Integer max;
     private Integer min;
     private long sum;
