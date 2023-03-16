@@ -19,6 +19,9 @@ public class StatsAccumulatorImpl implements StatsAccumulator {
 
     @Override
     public void add(int value) {
+        if (count == Integer.MAX_VALUE) {
+            throw new RuntimeException("Reached max elements, can't add");
+        }
         sum = Math.addExact(sum, value);
         compareForMinAndMax(value);
         count++;
