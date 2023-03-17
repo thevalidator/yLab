@@ -4,26 +4,36 @@
 
 package ru.thevalidator.thirdtask.datedmap;
 
-import java.util.Date;
+import java.util.Set;
 
 /**
  * @author thevalidator <the.validator@yandex.ru>
  */
 public class DatedMapDemo {
+    
+    private static final DatedMap dmap = new DatedMapImpl();
+    
     public static void main(String[] args) {
         
-        Date date = new Date(System.currentTimeMillis());
-        System.out.println("> " + date);
+        dmap.put("key1", "value1");
+        dmap.put("key2", "value2");
+        dmap.put("key2", "value22");
+        dmap.put("key3", "value3");
+        dmap.put("key4", null);
+        dmap.put("key5", "value5");
         
-        DatedMap dmap = new DatedMapImpl();
-        dmap.put("asd2", "111");
-        dmap.put("asd2", "222");
-        dmap.put("asd3", "111");
-        dmap.put("asd4", null);
-        System.out.println(dmap.getKeyLastInsertionDate("asd"));
-        dmap.remove("22");
-        System.out.println(dmap.keySet());
-        System.out.println(dmap.getKeyLastInsertionDate("asd4"));
+        Set<String> keys = dmap.keySet();
+        System.out.println("KEYSET: " + keys);
         
+        for (String key : keys) {
+            print(key);
+        }
+        String key = "newKey";
+        print(key);
+        
+    }
+    
+    public static void print(String key) {
+        System.out.printf("KEY: %7s    VALUE: %7s    DATE: %s\n", key, dmap.get(key), dmap.getKeyLastInsertionDate(key));
     }
 }
