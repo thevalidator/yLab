@@ -20,7 +20,7 @@ public class TransliteratorImpl implements Transliterator {
     public static final String DICT_FILE_NAME = "transliterator.dict";
     private static final char MIN = 'А';
     private static final char MAX = 'Я';
-    private Map<Character, String> dictionary;
+    private final Map<Character, String> dictionary;
 
     public TransliteratorImpl() {
         dictionary = initDictionary();
