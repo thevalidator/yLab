@@ -10,10 +10,11 @@ package ru.thevalidator.thirdtask.passwordvalidator;
 public class PasswordValidatorDemo {
     public static void main(String[] args) {
         
-        String login = "l0G_in111111111111111111111111111";
+        // added limit for min length of login and password equals 3
+        
+        String login = "a1";
         String password = "pass_W0rd";
         String confirmPassword = "pass_W0rd";
-        
         System.out.println(PasswordValidator.validate(login, password, confirmPassword));
     }
 }
