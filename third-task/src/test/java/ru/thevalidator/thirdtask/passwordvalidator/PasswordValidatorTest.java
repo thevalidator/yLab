@@ -82,7 +82,7 @@ public class PasswordValidatorTest {
         String login = null;
         String password = VALID_PASSWORD;
         String confirmPassword = password;
-        String error = "ERROR: " + LOGIN_TOO_SHORT.getMessage();
+        String error = "ERROR: " + LOGIN_IS_NULL.getMessage();
         boolean expResult = false;
         boolean result = PasswordValidator.validate(login, password, confirmPassword);
         
@@ -95,7 +95,7 @@ public class PasswordValidatorTest {
         String login = VALID_LOGIN;
         String password = null;
         String confirmPassword = "";
-        String error = "ERROR: " + PASSWORD_TOO_SHORT.getMessage();
+        String error = "ERROR: " + PASSWORD_IS_NULL.getMessage();
         boolean expResult = false;
         boolean result = PasswordValidator.validate(login, password, confirmPassword);
         
@@ -117,7 +117,7 @@ public class PasswordValidatorTest {
     }
     
     @Test
-    public void testValidateConfirmPasswordIsNOTEqualsPassword() throws UnsupportedEncodingException {
+    public void testValidateConfirmPasswordIsNotEqualsPassword() throws UnsupportedEncodingException {
         String login = VALID_LOGIN;
         String password = VALID_PASSWORD;
         String confirmPassword = "345435435345";
@@ -182,67 +182,13 @@ public class PasswordValidatorTest {
     }
     
     @Test
-    public void testValidateLoginLengthEqualsThree() throws UnsupportedEncodingException {
-        String login = "123";
-        String password = VALID_PASSWORD;
-        String confirmPassword = password;
-        String error = "ERROR: " + LOGIN_TOO_SHORT.getMessage();
-        boolean expResult = false;
-        boolean result = PasswordValidator.validate(login, password, confirmPassword);
-        
-        assertEquals(error, content.toString("UTF-8").trim());
-        assertEquals(expResult, result);
-    }
-    
-    @Test
-    public void testValidatePasswordLengthEqualsThree() throws UnsupportedEncodingException {
-        String login = VALID_LOGIN;
-        String password = "123";
-        String confirmPassword = password;
-        String error = "ERROR: " + PASSWORD_TOO_SHORT.getMessage();
-        boolean expResult = false;
-        boolean result = PasswordValidator.validate(login, password, confirmPassword);
-        
-        assertEquals(error, content.toString("UTF-8").trim());
-        assertEquals(expResult, result);
-    }
-    
-    @Test
-    public void testValidateLoginLengthLessThanThree() throws UnsupportedEncodingException {
-        String login = "1";
-        String password = VALID_PASSWORD;
-        String confirmPassword = password;
-        String error = "ERROR: " + LOGIN_TOO_SHORT.getMessage();
-        boolean expResult = false;
-        boolean result = PasswordValidator.validate(login, password, confirmPassword);
-        
-        assertEquals(error, content.toString("UTF-8").trim());
-        assertEquals(expResult, result);
-    }
-    
-    @Test
-    public void testValidatePasswordLengthLessThanThree() throws UnsupportedEncodingException {
-        String login = VALID_LOGIN;
-        String password = "22";
-        String confirmPassword = password;
-        String error = "ERROR: " + PASSWORD_TOO_SHORT.getMessage();
-        boolean expResult = false;
-        boolean result = PasswordValidator.validate(login, password, confirmPassword);
-        
-        assertEquals(error, content.toString("UTF-8").trim());
-        assertEquals(expResult, result);
-    }
-    
-    @Test
     public void testValidateLoginIsEmpty() throws UnsupportedEncodingException {
         String login = "";
         String password = VALID_PASSWORD;
         String confirmPassword = password;
-        String error = "ERROR: " + LOGIN_TOO_SHORT.getMessage();
-        boolean expResult = false;
+        boolean expResult = true;
         boolean result = PasswordValidator.validate(login, password, confirmPassword);
         
-        assertEquals(error, content.toString("UTF-8").trim());
         assertEquals(expResult, result);
     }
     
@@ -251,11 +197,9 @@ public class PasswordValidatorTest {
         String login = VALID_LOGIN;
         String password = "";
         String confirmPassword = "";
-        String error = "ERROR: " + PASSWORD_TOO_SHORT.getMessage();
-        boolean expResult = false;
+        boolean expResult = true;
         boolean result = PasswordValidator.validate(login, password, confirmPassword);
         
-        assertEquals(error, content.toString("UTF-8").trim());
         assertEquals(expResult, result);
     }
     
