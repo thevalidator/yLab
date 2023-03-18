@@ -21,18 +21,22 @@ public class TransliteratorDemo {
         String res1 = transliterator.transliterate(text1);
         System.out.println("text before: " + text1);
         System.out.println("text  after: " + res1);
+        System.out.println();
         
         String res2 = transliterator.transliterate(text2);
         System.out.println("text before: " + text2);
         System.out.println("text  after: " + res2);
+        System.out.println();
         
         String res3 = transliterator.transliterate(text3);
         System.out.println("text before: " + text3);
         System.out.println("text  after: " + res3);
+        System.out.println();
         
         String res4 = transliterator.transliterate(text4);
         System.out.println("text before: " + text4);
         System.out.println("text  after: " + res4);
+        System.out.println();
         
         String res5 = transliterator.transliterate(text5);
         System.out.println("text before: " + text5);
