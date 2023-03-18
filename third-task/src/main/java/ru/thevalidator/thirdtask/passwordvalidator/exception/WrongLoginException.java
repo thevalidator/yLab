@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2023 thevalidator
  */
-package ru.thevalidator.thirdtask.passwordvalidator;
+package ru.thevalidator.thirdtask.passwordvalidator.exception;
 
 /**
  * @author thevalidator <the.validator@yandex.ru>

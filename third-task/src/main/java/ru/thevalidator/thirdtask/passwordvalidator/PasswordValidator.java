@@ -3,6 +3,8 @@
  */
 package ru.thevalidator.thirdtask.passwordvalidator;
 
+import ru.thevalidator.thirdtask.passwordvalidator.exception.WrongLoginException;
+import ru.thevalidator.thirdtask.passwordvalidator.exception.WrongPasswordException;
 import static ru.thevalidator.thirdtask.passwordvalidator.ErrorType.*;
 
 /**
