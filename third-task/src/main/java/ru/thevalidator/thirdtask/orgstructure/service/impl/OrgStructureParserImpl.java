@@ -27,14 +27,9 @@ public class OrgStructureParserImpl implements OrgStructureParser {
                 BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"))) {
 
             String line;
-            boolean isFirstLineRead = false;
+            br.readLine();
             while ((line = br.readLine()) != null && !line.isBlank()) {
-                if (!isFirstLineRead) {
-                    isFirstLineRead = true;
-                    continue;
-                }
-                String[] data = line.split(";");
-                Employee em = readEmployee(data);
+                Employee em = readEmployee(line);
                 if (em.getBossId() == null) {
                     boss = em;
                 }
@@ -49,7 +44,8 @@ public class OrgStructureParserImpl implements OrgStructureParser {
         return boss;
     }
 
-    private Employee readEmployee(String[] data) {
+    private Employee readEmployee(String line) {
+        String[] data = line.split(";");
         Long id = Long.valueOf(data[0]);
         Long bossId = data[1].isEmpty() ? null : Long.valueOf(data[1]);
         String name = data[2];
