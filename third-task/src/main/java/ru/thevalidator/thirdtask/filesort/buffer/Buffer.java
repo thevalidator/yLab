@@ -24,10 +24,10 @@ public class Buffer {
         size = file.length();
     }
 
-//    public File getFile() {
-//        return file;
-//    }
-//
+    public File getFile() {
+        return file;
+    }
+    
 //    public long getPosition() {
 //        return position;
 //    }
