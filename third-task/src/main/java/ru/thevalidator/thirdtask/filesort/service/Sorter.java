@@ -27,8 +27,13 @@ import ru.thevalidator.thirdtask.filesort.datastruct.MinHeap;
  */
 public class Sorter {
 
-    private static final int NUMBERS_PER_FILE = 375_000_000 / 10;
     private static final int NUMBER_OF_BUFFERS = 10;
+    private final int LINES_PER_FILE;     //= 375_000_000 / 10;
+
+    public Sorter(int linesPerFile) {
+        this.LINES_PER_FILE = linesPerFile;
+    }
+    
 
     public File sortFile(File dataFile) throws IOException {
 
@@ -112,7 +117,7 @@ public class Sorter {
                 }
                 Buffer b = new Buffer(files.get(0));
                 buffers.add(b);
-                buffersData.put(i, b.readLines(NUMBERS_PER_FILE / NUMBER_OF_BUFFERS));
+                buffersData.put(i, b.readLines(LINES_PER_FILE / NUMBER_OF_BUFFERS));
                 files.remove(0);
             }
 
@@ -134,7 +139,7 @@ public class Sorter {
                     } else {
                         Buffer b = buffers.get(node.getBufferNumber());
                         if (!b.isRead()) {
-                            buffersData.put(node.getBufferNumber(), b.readLines(NUMBERS_PER_FILE / NUMBER_OF_BUFFERS));
+                            buffersData.put(node.getBufferNumber(), b.readLines(LINES_PER_FILE / NUMBER_OF_BUFFERS));
                             heap.insert(new HeapNode(node.getBufferNumber(), buffersData.get(node.getBufferNumber()).get(0), 0));
                         } else {
                             deleteFile(b.getFile());
@@ -160,16 +165,16 @@ public class Sorter {
             String line = null;
             while ((line = lnr.readLine()) != null) {
                 data.add(Long.valueOf(line));
-                if (data.size() % NUMBERS_PER_FILE == 0) {
+                if (data.size() % LINES_PER_FILE == 0 || data.size() == Integer.MAX_VALUE) {
                     fileCounter++;
                     String filename = "tmp_" + fileCounter + ".tmp";
-                    splittedFiles.add(writeFile(filename, data));
+                    splittedFiles.add(writeDataToFile(filename, data));
                     data.clear();
                 }
             }
             if (!data.isEmpty()) {
                 String filename = "final.tmp";
-                splittedFiles.add(writeFile(filename, data));
+                splittedFiles.add(writeDataToFile(filename, data));
             }
 
         } catch (Exception e) {
@@ -179,10 +184,9 @@ public class Sorter {
         return splittedFiles;
     }
 
-    private File writeFile(String filename, List<Long> data) throws FileNotFoundException {
+    private File writeDataToFile(String filename, List<Long> data) throws FileNotFoundException {
         Collections.sort(data);
         File file = saveToFile(filename, data);
-        data.clear();
 
         return file;
     }
