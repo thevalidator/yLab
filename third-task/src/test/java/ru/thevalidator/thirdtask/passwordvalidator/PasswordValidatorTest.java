@@ -203,4 +203,30 @@ public class PasswordValidatorTest {
         assertEquals(expResult, result);
     }
     
+    @Test
+    public void testValidateLoginHasSpaceSymbol() throws UnsupportedEncodingException {
+        String login = " ";
+        String password = VALID_PASSWORD;
+        String confirmPassword = password;
+        String error = "ERROR: " + LOGIN_HAS_INVALID_SYMBOL.getMessage();
+        boolean expResult = false;
+        boolean result = PasswordValidator.validate(login, password, confirmPassword);
+        
+        assertEquals(error, content.toString("UTF-8").trim());
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testValidatePasswordHasSpaceSymbol() throws UnsupportedEncodingException {
+        String login = VALID_LOGIN;
+        String password = " ";
+        String confirmPassword = "";
+        String error = "ERROR: " + PASSWORD_HAS_INVALID_SYMBOL.getMessage();
+        boolean expResult = false;
+        boolean result = PasswordValidator.validate(login, password, confirmPassword);
+        
+        assertEquals(error, content.toString("UTF-8").trim());
+        assertEquals(expResult, result);
+    }
+    
 }
