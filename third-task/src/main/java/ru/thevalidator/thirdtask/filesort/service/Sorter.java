@@ -36,7 +36,8 @@ public class Sorter {
         
         // option 1
         while (splittedFiles.size() != 1) {
-            File megred = mergeTwoFiles(splittedFiles.get(0), splittedFiles.get(1));
+            String filename = splittedFiles.size() == 2 ? "sorted.txt" : "merged" + System.currentTimeMillis();
+            File megred = mergeTwoFiles(filename, splittedFiles.get(0), splittedFiles.get(1));
             File f1 = splittedFiles.remove(0);
             File f2 = splittedFiles.remove(0);
             deleteFile(f2);
@@ -52,8 +53,8 @@ public class Sorter {
         return sortedFile;
     }
 
-    public File mergeTwoFiles(File file1, File file2) throws FileNotFoundException, IOException {
-        File merged = new File("merged_" + System.currentTimeMillis());
+    public File mergeTwoFiles(String filename, File file1, File file2) throws FileNotFoundException, IOException {
+        File merged = new File(filename);
         try (BufferedReader br1 = new BufferedReader(new FileReader(file1)); 
                 BufferedReader br2 = new BufferedReader(new FileReader(file2)); 
                 PrintWriter pw = new PrintWriter(merged)) {
