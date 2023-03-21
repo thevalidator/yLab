@@ -26,6 +26,32 @@ public class DatedMapImplTest {
     }
     
     @Test
+    public void testPutKeyEqualsNull() {
+        String key = null;
+        String value = "testValue";
+        DatedMapImpl instance = new DatedMapImpl();
+        instance.put(key, value);
+        
+        assertEquals(true, instance.containsKey(key));
+        assertEquals(value, instance.get(key));
+        assertEquals(1, instance.keySet().size());
+        assertTrue(instance.getKeyLastInsertionDate(key) != null);
+    }
+    
+    @Test
+    public void testPutKeyIsBlank() {
+        String key = "";
+        String value = "testValue";
+        DatedMapImpl instance = new DatedMapImpl();
+        instance.put(key, value);
+        
+        assertEquals(true, instance.containsKey(key));
+        assertEquals(value, instance.get(key));
+        assertEquals(1, instance.keySet().size());
+        assertTrue(instance.getKeyLastInsertionDate(key) != null);
+    }
+    
+    @Test
     public void testPutValueEqualsNull() {
         String key = "testKey";
         String value = null;
