@@ -16,16 +16,11 @@ public class FileSortDemo {
 
     public static void main(String[] args) throws IOException {
         
-        //File dataFile = new Generator().generate("data.txt", 375_000_000);
-        //File dataFile = new Generator().generate("data.txt", 1100);
-        File dataFile = new File("data.txt");
+        File dataFile = new Generator().generate("data.txt", 375_000_000);  //new File("data.txt"); 
         System.out.println(new Validator(dataFile).isSorted()); // false
-        
-        
         
         // the size of the splitted files counts automaticly
         File sortedFile = new Sorter().sortFile(dataFile);
-        
         
         
         // the size of the splitted files is set by constructor's parameter
@@ -34,9 +29,8 @@ public class FileSortDemo {
 //        File sortedFile = new Sorter(linesCount).sortFile(dataFile);
         
         
-        
-        System.out.println(dataFile.length() == sortedFile.length());
-        System.out.println(new Validator(sortedFile).isSorted()); // true
+        System.out.println(dataFile.length() == sortedFile.length());   // true
+        System.out.println(new Validator(sortedFile).isSorted());       // true
         
     }
 
