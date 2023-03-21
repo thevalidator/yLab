@@ -8,11 +8,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.PrintWriter;
-import java.io.RandomAccessFile;
 import java.io.Reader;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,38 +27,79 @@ import ru.thevalidator.thirdtask.filesort.datastruct.MinHeap;
  */
 public class Sorter {
 
-    private static final int NUMBERS_PER_FILE = 100;
-    private static final int NUMBER_OF_BUFFERS = 8;
-    private static final int BUFFER_SIZE = 1024 * 8;
+    private static final int NUMBERS_PER_FILE = 375_000_000 / 10;
+    private static final int NUMBER_OF_BUFFERS = 10;
 
     public File sortFile(File dataFile) throws IOException {
 
-        //File sortedFile = new File("sorted_data.txt");
-        //String tmpPath = "tmp" + File.separator;
-        //File curFile = new File(tempDirectory + "temp" + (++fileCount));
         List<File> splittedFiles = splitFile(dataFile);
-        mergeSortedFiles(null, splittedFiles);
+        
+        // option 1
+        while (splittedFiles.size() != 1) {
+            File megred = mergeTwoFiles(splittedFiles.get(0), splittedFiles.get(1));
+            File f1 = splittedFiles.remove(0);
+            File f2 = splittedFiles.remove(0);
+            deleteFile(f2);
+            deleteFile(f1);
+            splittedFiles.add(megred);
+        }
+        File sortedFile = splittedFiles.get(0);
+                
+        // option 2
+        //File sortedFile = kWayMergeSort(splittedFiles);
 
-//        try(Reader reader = new FileReader(dataFile);
-//                LineNumberReader lineNumberReader = new LineNumberReader(reader)){
-//            
-//            System.out.println("Start Line Number: " + lineNumberReader.getLineNumber());
-//            
-//            System.out.println(" ----- ");
-//
-//            String line = null;
-//            while((line  = lineNumberReader.readLine()) != null) {  
-//                
-//                System.out.println("Line Number: " + lineNumberReader.getLineNumber());
-//                System.out.println("  Line Content: " + line);
-//            }
-//        } catch (Exception e) {
-//            
-//        }
-        return null;
+
+        return sortedFile;
     }
 
-    public File mergeSortedFiles(File mergedFile, List<File> files) throws FileNotFoundException, IOException {
+    public File mergeTwoFiles(File file1, File file2) throws FileNotFoundException, IOException {
+        File merged = new File("merged_" + System.currentTimeMillis());
+        try (BufferedReader br1 = new BufferedReader(new FileReader(file1)); 
+                BufferedReader br2 = new BufferedReader(new FileReader(file2)); 
+                PrintWriter pw = new PrintWriter(merged)) {
+            
+            mergeSort(br1, br2, pw);
+            pw.flush();
+        }
+        return merged;
+
+    }
+
+    public void mergeSort(BufferedReader br1, BufferedReader br2, PrintWriter wr) throws IOException {
+
+        String line1 = br1.readLine();
+        String line2 = br2.readLine();
+
+        while (line1 != null && line2 != null) {
+
+            Long num1 = Long.valueOf(line1);
+            Long num2 = Long.valueOf(line2);
+
+            if (num1 >= num2) {
+                wr.println(line2);
+                line2 = br2.readLine();
+            } else {
+                wr.println(line1);
+                line1 = br1.readLine();
+            }
+
+        }
+
+        while (line1 != null) {
+            Long num = Long.valueOf(line1);
+            wr.println(num);
+            line1 = br1.readLine();
+        }
+
+        while (line2 != null) {
+            Long num = Long.valueOf(line2);
+            wr.println(num);
+            line2 = br2.readLine();
+        }
+
+    }
+
+    public File kWayMergeSort(List<File> files) throws FileNotFoundException, IOException {
 
         while (files.size() > 1) {
             List<Buffer> buffers = new ArrayList<>();
@@ -81,7 +122,7 @@ public class Sorter {
             }
 
             File merged = new File("merged_" + System.currentTimeMillis());
-            try ( PrintWriter pw = new PrintWriter(merged)) {
+            try (PrintWriter pw = new PrintWriter(merged)) {
                 HeapNode node;
                 while ((node = heap.extract()) != null) {
                     pw.println(node.getValue());
@@ -94,16 +135,18 @@ public class Sorter {
                         if (!b.isRead()) {
                             buffersData.put(node.getBufferNumber(), b.readLines(NUMBERS_PER_FILE / NUMBER_OF_BUFFERS));
                             heap.insert(new HeapNode(node.getBufferNumber(), buffersData.get(node.getBufferNumber()).get(0), 0));
+                        } else {
+                            deleteFile(b.getFile());
+                            //buffers.remove(b);
                         }
                     }
-                    //heap.insert(new HeapNode(node.getBufferNumber(), buffersData.get(node.getBufferNumber()).get(index), index));
                 }
                 pw.flush();
             }
             files.add(merged);
         }
 
-        return null;
+        return files.get(0);
     }
 
     private List<File> splitFile(File dataFile) {
@@ -111,7 +154,7 @@ public class Sorter {
         int fileCounter = 0;
         List<Long> data = new ArrayList<>();
 
-        try ( Reader reader = new FileReader(dataFile);  BufferedReader lnr = new BufferedReader(reader)) {
+        try (Reader reader = new FileReader(dataFile); BufferedReader lnr = new BufferedReader(reader)) {
 
             String line = null;
             while ((line = lnr.readLine()) != null) {
@@ -129,7 +172,7 @@ public class Sorter {
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
 
         return splittedFiles;
@@ -145,7 +188,7 @@ public class Sorter {
 
     private File saveToFile(String name, List<Long> data) throws FileNotFoundException {
         File file = new File(name);
-        try ( PrintWriter pw = new PrintWriter(file)) {
+        try (PrintWriter pw = new PrintWriter(file)) {
             for (Long l : data) {
                 pw.println(l);
             }
@@ -156,7 +199,16 @@ public class Sorter {
     }
 
     private void deleteFile(File file) {
-        // TODO:
+        try {
+            Files.delete(file.toPath());
+        } catch (NoSuchFileException x) {
+            System.err.format("%s: no such" + " file or directory%n", file.toPath());
+        } catch (DirectoryNotEmptyException x) {
+            System.err.format("%s not empty%n", file.toPath());
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
+        }
     }
 
 }
