@@ -28,8 +28,17 @@ import ru.thevalidator.thirdtask.filesort.datastruct.MinHeap;
 public class Sorter {
 
     private static final int NUMBER_OF_BUFFERS = 10;
+    private static final int LONG_SIZE_IN_BYTES = 8;
     private final int LINES_PER_FILE;     //= 375_000_000 / 10;
 
+    public Sorter() {
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        long lines = freeMemory / LONG_SIZE_IN_BYTES;
+        LINES_PER_FILE = freeMemory > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) lines;
+    }
+
+    // the size of the splitted files is set by constructor's parameter
+    // beware can throw OutOfMemory exception in case of wrong value !!! 
     public Sorter(int linesPerFile) {
         this.LINES_PER_FILE = linesPerFile;
     }
