@@ -19,11 +19,21 @@ public class FileSortDemo {
         //File dataFile = new Generator().generate("data.txt", 375_000_000);
         //File dataFile = new Generator().generate("data.txt", 1100);
         File dataFile = new File("data.txt");
-        
         System.out.println(new Validator(dataFile).isSorted()); // false
         
-        int linesCount = 100_000_000;
-        File sortedFile = new Sorter(linesCount).sortFile(dataFile);
+        
+        
+        // the size of the splitted files counts automaticly
+        File sortedFile = new Sorter().sortFile(dataFile);
+        
+        
+        
+        // the size of the splitted files is set by constructor's parameter
+        // !!! beware can throw OutOfMemory exception in case of wrong value !!! 
+//        int linesCount = 100_000_000;
+//        File sortedFile = new Sorter(linesCount).sortFile(dataFile);
+        
+        
         
         System.out.println(dataFile.length() == sortedFile.length());
         System.out.println(new Validator(sortedFile).isSorted()); // true
