@@ -54,4 +54,12 @@ public class TransliteratorImplTest {
         assertEquals(expResult, result);
     }
     
+    @Test
+    public void testTransliterateSpaceSymbol() {
+        String source = " ";
+        String expResult = " ";
+        String result = instance.transliterate(source);
+        assertEquals(expResult, result);
+    }
+    
 }
