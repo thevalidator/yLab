@@ -27,12 +27,12 @@ public class PasswordValidator {
                 throw new WrongLoginException(LOGIN_TOO_LONG.getMessage());
             } else if (password.length() >= MAX_LENGTH) {
                 throw new WrongPasswordException(PASSWORD_TOO_LONG.getMessage());
-            } else if (confirmPassword == null || !password.equals(confirmPassword)) {
-                throw new WrongPasswordException(PASSWORDS_DOESNT_MATCH.getMessage());
             } else if (!login.isEmpty() && !login.matches(PATTERN)) {
                 throw new WrongLoginException(LOGIN_HAS_INVALID_SYMBOL.getMessage());
             } else if (!password.isEmpty() && !password.matches(PATTERN)) {
                 throw new WrongPasswordException(PASSWORD_HAS_INVALID_SYMBOL.getMessage());
+            } else if (confirmPassword == null || !password.equals(confirmPassword)) {
+                throw new WrongPasswordException(PASSWORDS_DOESNT_MATCH.getMessage());
             }
             result = true;
 
