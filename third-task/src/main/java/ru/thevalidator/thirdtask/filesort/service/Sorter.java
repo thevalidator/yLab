@@ -15,21 +15,15 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import ru.thevalidator.thirdtask.filesort.buffer.Buffer;
-import ru.thevalidator.thirdtask.filesort.datastruct.HeapNode;
-import ru.thevalidator.thirdtask.filesort.datastruct.MinHeap;
 
 /**
  * @author thevalidator <the.validator@yandex.ru>
  */
 public class Sorter {
 
-    private static final int NUMBER_OF_BUFFERS = 10;
     private static final int LONG_SIZE_IN_BYTES = 8;
-    private final int LINES_PER_FILE;     //= 375_000_000 / 10;
+    private final int LINES_PER_FILE;
 
     public Sorter() {
         long freeMemory = Runtime.getRuntime().freeMemory();
@@ -47,8 +41,6 @@ public class Sorter {
     public File sortFile(File dataFile) throws IOException {
 
         List<File> splittedFiles = splitFile(dataFile);
-        
-        // option 1
         while (splittedFiles.size() != 1) {
             String filename = splittedFiles.size() == 2 ? "sorted.txt" : "merged" + System.currentTimeMillis();
             File megred = mergeTwoFiles(filename, splittedFiles.get(0), splittedFiles.get(1));
@@ -59,10 +51,6 @@ public class Sorter {
             splittedFiles.add(megred);
         }
         File sortedFile = splittedFiles.get(0);
-                
-        // option 2
-        //File sortedFile = kWayMergeSort(splittedFiles);
-
 
         return sortedFile;
     }
@@ -86,7 +74,6 @@ public class Sorter {
         String line2 = br2.readLine();
 
         while (line1 != null && line2 != null) {
-
             Long num1 = Long.valueOf(line1);
             Long num2 = Long.valueOf(line2);
 
@@ -97,7 +84,6 @@ public class Sorter {
                 wr.println(line1);
                 line1 = br1.readLine();
             }
-
         }
 
         while (line1 != null) {
@@ -114,56 +100,6 @@ public class Sorter {
 
     }
 
-    public File kWayMergeSort(List<File> files) throws FileNotFoundException, IOException {
-
-        while (files.size() > 1) {
-            List<Buffer> buffers = new ArrayList<>();
-            Map<Integer, List<Long>> buffersData = new HashMap<>();
-
-            for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
-                if (files.isEmpty()) {
-                    break;
-                }
-                Buffer b = new Buffer(files.get(0));
-                buffers.add(b);
-                buffersData.put(i, b.readLines(LINES_PER_FILE / NUMBER_OF_BUFFERS));
-                files.remove(0);
-            }
-
-            MinHeap heap = new MinHeap(buffersData.size());
-
-            for (Map.Entry<Integer, List<Long>> entry : buffersData.entrySet()) {
-                heap.insert(new HeapNode(entry.getKey(), entry.getValue().get(0), 0));
-            }
-
-            File merged = new File("merged_" + System.currentTimeMillis());
-            try (PrintWriter pw = new PrintWriter(merged)) {
-                HeapNode node;
-                while ((node = heap.extract()) != null) {
-                    pw.println(node.getValue());
-
-                    int index = node.getIndex() + 1;
-                    if (index < buffersData.get(node.getBufferNumber()).size()) {
-                        heap.insert(new HeapNode(node.getBufferNumber(), buffersData.get(node.getBufferNumber()).get(index), index));
-                    } else {
-                        Buffer b = buffers.get(node.getBufferNumber());
-                        if (!b.isRead()) {
-                            buffersData.put(node.getBufferNumber(), b.readLines(LINES_PER_FILE / NUMBER_OF_BUFFERS));
-                            heap.insert(new HeapNode(node.getBufferNumber(), buffersData.get(node.getBufferNumber()).get(0), 0));
-                        } else {
-                            deleteFile(b.getFile());
-                            //buffers.remove(b);
-                        }
-                    }
-                }
-                pw.flush();
-            }
-            files.add(merged);
-        }
-
-        return files.get(0);
-    }
-
     private List<File> splitFile(File dataFile) {
         List<File> splittedFiles = new ArrayList<>();
         int fileCounter = 0;
@@ -171,18 +107,18 @@ public class Sorter {
 
         try (Reader reader = new FileReader(dataFile); BufferedReader lnr = new BufferedReader(reader)) {
 
-            String line = null;
+            String line;
             while ((line = lnr.readLine()) != null) {
                 data.add(Long.valueOf(line));
                 if (data.size() % LINES_PER_FILE == 0 || data.size() == Integer.MAX_VALUE) {
                     fileCounter++;
-                    String filename = "tmp_" + fileCounter + ".tmp";
+                    String filename = "temp_" + fileCounter + ".tmp";
                     splittedFiles.add(writeDataToFile(filename, data));
                     data.clear();
                 }
             }
             if (!data.isEmpty()) {
-                String filename = "final.tmp";
+                String filename = "temp_final.tmp";
                 splittedFiles.add(writeDataToFile(filename, data));
             }
 
