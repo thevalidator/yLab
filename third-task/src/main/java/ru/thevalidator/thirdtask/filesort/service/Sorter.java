@@ -24,6 +24,7 @@ public class Sorter {
 
     private static final int LONG_SIZE_IN_BYTES = 8;
     private final int LINES_PER_FILE;
+    private final String SORTED_FILENAME = "sorted.txt";
 
     public Sorter() {
         long freeMemory = Runtime.getRuntime().freeMemory();
@@ -42,7 +43,7 @@ public class Sorter {
 
         List<File> splittedFiles = splitFile(dataFile);
         while (splittedFiles.size() != 1) {
-            String filename = splittedFiles.size() == 2 ? "sorted.txt" : "merged" + System.currentTimeMillis();
+            String filename = splittedFiles.size() == 2 ? SORTED_FILENAME : "merged" + System.currentTimeMillis();
             File megred = mergeTwoFiles(filename, splittedFiles.get(0), splittedFiles.get(1));
             File f1 = splittedFiles.remove(0);
             File f2 = splittedFiles.remove(0);
@@ -118,7 +119,7 @@ public class Sorter {
                 }
             }
             if (!data.isEmpty()) {
-                String filename = "temp_final.tmp";
+                String filename = fileCounter == 0 ? SORTED_FILENAME : "temp_final.tmp";
                 splittedFiles.add(writeDataToFile(filename, data));
             }
 
