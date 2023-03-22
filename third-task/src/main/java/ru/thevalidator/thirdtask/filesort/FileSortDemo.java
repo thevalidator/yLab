@@ -21,7 +21,7 @@ public class FileSortDemo {
         
         // the size of the splitted files counts automaticly
         File sortedFile = new Sorter().sortFile(dataFile);
-        
+        System.out.println("sorted filename: " + sortedFile.getName());
         
         // the size of the splitted files is set by constructor's parameter
         // !!! beware can throw OutOfMemory exception in case of wrong value !!! 
