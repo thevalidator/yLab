@@ -19,13 +19,11 @@ public class TransliteratorImpl implements Transliterator {
 
     private static final String DICT_FILE_NAME = "transliterator.dict";
 
-    private final List<Character> alphabet;
     private final Map<Character, String> dictionary;
 
     public TransliteratorImpl() {
-        alphabet = new ArrayList<>();
         dictionary = new HashMap<>();
-        initData(alphabet, dictionary);
+        initData(dictionary);
     }
 
     @Override
@@ -36,7 +34,7 @@ public class TransliteratorImpl implements Transliterator {
 
         StringBuilder sb = new StringBuilder();
         for (char c : source.toCharArray()) {
-            if (alphabet.contains(c)) {
+            if (dictionary.containsKey(c)) {
                 String replace = dictionary.get(c);
                 sb.append(replace);
             } else {
@@ -46,7 +44,7 @@ public class TransliteratorImpl implements Transliterator {
         return sb.toString();
     }
 
-    private void initData(List<Character> alphabet, Map<Character, String> dictionary) {
+    private void initData(Map<Character, String> dictionary) {
         try ( InputStream is = getClass().getClassLoader().getResourceAsStream(DICT_FILE_NAME);  
                 BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {
 
@@ -57,7 +55,6 @@ public class TransliteratorImpl implements Transliterator {
                 }
                 Character c = line.charAt(0);
                 String v = line.substring(2).startsWith("-") ? "" : line.substring(2);
-                alphabet.add(c);
                 dictionary.put(c, v);
             }
 
