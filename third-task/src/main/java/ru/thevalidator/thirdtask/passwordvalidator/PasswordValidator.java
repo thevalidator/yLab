@@ -37,7 +37,7 @@ public class PasswordValidator {
             result = true;
 
         } catch (WrongLoginException | WrongPasswordException e) {
-            System.out.println("ERROR: " + e.getMessage());
+            System.err.println("ERROR: " + e.getMessage());
         } finally {
             return result;
         }
