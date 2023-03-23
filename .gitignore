@@ -25,3 +25,5 @@ replay_pid*
 *.docx
 /second-task/target/
 /second-task/nbproject/
+/third-task/target/
+/third-task/nbproject/
