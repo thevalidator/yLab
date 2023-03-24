@@ -15,7 +15,7 @@ public class MovieTest {
     movieLoader.loadData(dataFile);
 
     /**
-     * запрос получения всех 
+     * запрос, выводящий количество фильмов каждого жанра:
      * SELECT subject, count(id) FROM movie GROUP BY subject;
      */
   }

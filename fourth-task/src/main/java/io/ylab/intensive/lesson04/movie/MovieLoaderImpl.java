@@ -42,11 +42,9 @@ public class MovieLoaderImpl implements MovieLoader {
             }
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(MovieLoaderImpl.class.getName()).log(Level.SEVERE,
-                    ex.getMessage());
+            Logger.getLogger(MovieLoaderImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(MovieLoaderImpl.class.getName()).log(Level.SEVERE,
-                    ex.getMessage());
+            Logger.getLogger(MovieLoaderImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
     }
 
@@ -80,17 +78,16 @@ public class MovieLoaderImpl implements MovieLoader {
 
     private int[] saveMovies(List<Movie> movies) {
         int[] idList = null;
-        try (Connection conn = dataSource.getConnection(); PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO movie VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");) {
+        try (Connection conn = dataSource.getConnection(); 
+                PreparedStatement ps = conn.prepareStatement("INSERT INTO movie VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");) {
 
             long id = 1L;
             for (Movie m: movies) {
-                fillDataInStatement(ps, id, m);
+                setStatementValues(ps, id, m);
                 ps.addBatch();
                 ps.clearParameters();
                 id++;
             }
-
             idList = ps.executeBatch();
 
         } catch (SQLException ex) {
@@ -101,7 +98,7 @@ public class MovieLoaderImpl implements MovieLoader {
         }
     }
 
-    private void fillDataInStatement(PreparedStatement ps, long id, Movie m) throws SQLException {
+    private void setStatementValues(PreparedStatement ps, long id, Movie m) throws SQLException {
         ps.setLong(1, id);
         if (m.getYear() != null) {
             ps.setInt(2, m.getYear());
