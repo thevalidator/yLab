@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 public class MovieLoaderImpl implements MovieLoader {
 
     private DataSource dataSource;
+    private static final int BATCH_SIZE = 5_000;
 
     public MovieLoaderImpl(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -50,8 +51,6 @@ public class MovieLoaderImpl implements MovieLoader {
 
     private Movie parseMovie(String line) {
         String[] data = line.split(";");
-        //Year;Length;Title;Subject;Actor;Actress;Director;Popularity;Awards;*Image
-        //INT;INT;STRING;CAT;CAT;CAT;CAT;INT;BOOL;STRING
         Integer year = data[0].isBlank() ? null : Integer.valueOf(data[0]);
         Integer length = data[1].isBlank() ? null : Integer.valueOf(data[1]);
         String title = data[2].isBlank() ? null : data[2];
@@ -76,25 +75,26 @@ public class MovieLoaderImpl implements MovieLoader {
         return movie;
     }
 
-    private int[] saveMovies(List<Movie> movies) {
-        int[] idList = null;
+    private boolean saveMovies(List<Movie> movies) {
+        boolean isSuccess = false;
         try (Connection conn = dataSource.getConnection(); 
                 PreparedStatement ps = conn.prepareStatement("INSERT INTO movie VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");) {
 
             long id = 1L;
-            for (Movie m: movies) {
-                setStatementValues(ps, id, m);
+            for (int i = 0; i < movies.size(); i++) {
+                Movie m = movies.get(i);
+                setStatementValues(ps, id++, m);
                 ps.addBatch();
-                ps.clearParameters();
-                id++;
+                if ((i + 1) % BATCH_SIZE == 0 || (i + 1) == movies.size()) {
+                    ps.executeBatch();
+                }
             }
-            idList = ps.executeBatch();
+            isSuccess = true;
 
         } catch (SQLException ex) {
-            Logger.getLogger(MovieLoaderImpl.class.getName()).log(Level.SEVERE,
-                    ex.getMessage());
+            Logger.getLogger(MovieLoaderImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         } finally {
-            return idList;
+            return isSuccess;
         }
     }
 
