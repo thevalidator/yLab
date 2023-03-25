@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 
-/**
- * Класс, методы которого надо реализовать
- */
 public class PersistentMapImpl implements PersistentMap {
 
     private final DataSource dataSource;
@@ -34,13 +31,14 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public List<String> getKeys() throws SQLException {
+        String query = getKeysQuery(name == null);
         List<String> keys = new ArrayList<>();
         try (Connection conn = dataSource.getConnection(); 
-                PreparedStatement ps = conn.prepareStatement(GET_KEYS);) {
+                PreparedStatement ps = conn.prepareStatement(query);) {
 
-            ps.setString(1, name);
-            ResultSet rs =  ps.executeQuery();
-            
+            setValuesForStatement(ps, name);            
+            ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 keys.add(rs.getString("KEY"));
             }
@@ -51,13 +49,13 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public String get(String key) throws SQLException {
+        String query = getQuery(name == null, key == null);
         try (Connection conn = dataSource.getConnection(); 
-                PreparedStatement ps = conn.prepareStatement(GET);) {
+                PreparedStatement ps = conn.prepareStatement(query);) {
 
-            ps.setString(1, name);
-            ps.setString(2, key);
-            ResultSet rs =  ps.executeQuery();
-            
+            setValuesForStatement(ps, name, key);
+            ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
                 return rs.getString("value");
             }
@@ -68,11 +66,11 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public void remove(String key) throws SQLException {
+        String query = removeQuery(name == null, key == null);
         try (Connection conn = dataSource.getConnection(); 
-                PreparedStatement ps = conn.prepareStatement(REMOVE);) {
+                PreparedStatement ps = conn.prepareStatement(query);) {
 
-            ps.setString(1, name);
-            ps.setString(2, key);
+            setValuesForStatement(ps, name, key);
             ps.executeUpdate();
 
         }
@@ -80,17 +78,16 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public void put(String key, String value) throws SQLException {
+        String removeQuery = removeQuery(name == null, key == null);
+        String putQuery = putQuery();
         try (Connection conn = dataSource.getConnection(); 
-                PreparedStatement rps = conn.prepareStatement(REMOVE); 
-                PreparedStatement pps = conn.prepareStatement(PUT);) {
-
-            rps.setString(1, name);
-            rps.setString(2, key);
+                PreparedStatement rps = conn.prepareStatement(removeQuery); 
+                PreparedStatement pps = conn.prepareStatement(putQuery);) {
+            
+            setValuesForStatement(rps, name, key);
             rps.executeUpdate();
 
-            pps.setString(1, name);
-            pps.setString(2, key);
-            pps.setString(3, value);
+            setValuesForStatement(pps, name, key, value);
             pps.executeUpdate();
 
         }
@@ -98,9 +95,32 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public void clear() throws SQLException {
-        try (Connection conn = dataSource.getConnection(); 
-                 Statement st = conn.createStatement();) {
-            st.execute(CLEAR);
+        try (Connection conn = dataSource.getConnection();
+                Statement st = conn.createStatement();) {
+            st.execute(clearQuery());
         }
+    }
+
+    private void setValuesForStatement(PreparedStatement rps, String name, String key) throws SQLException {
+        if (name != null) {
+            rps.setString(1, name);
+            if (key != null) {
+                rps.setString(2, key);
+            }
+        } else if (key != null) {
+            rps.setString(1, key);
+        }
+    }
+
+    private void setValuesForStatement(PreparedStatement ps, String name) throws SQLException {
+        if (name != null) {
+            ps.setString(1, name);
+        }
+    }
+
+    private void setValuesForStatement(PreparedStatement pps, String name, String key, String value) throws SQLException {
+        pps.setString(1, name);
+        pps.setString(2, key);
+        pps.setString(3, value);
     }
 }
