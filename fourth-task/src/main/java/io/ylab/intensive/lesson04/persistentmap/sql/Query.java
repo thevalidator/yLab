@@ -17,7 +17,8 @@ public class Query {
     
     public static final String GET_KEYS = ""
             + "SELECT \"key\" "
-            + "FROM persistent_map;";
+            + "FROM persistent_map "
+            + "WHERE map_name=?;";
     
     public static final String GET = ""
             + "SELECT value "
@@ -28,8 +29,7 @@ public class Query {
     public static final String REMOVE = ""
             + "DELETE FROM persistent_map "
             + "WHERE map_name=? "
-            + "AND \"key\"=? "
-            + "AND value=?;";
+            + "AND \"key\"=?;";
     
     public static final String PUT = ""
             + "INSERT INTO persistent_map (map_name, \"key\", value) "
