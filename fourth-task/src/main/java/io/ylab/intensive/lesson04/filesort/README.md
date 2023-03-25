@@ -12,5 +12,4 @@ public interface FileSorter {
 - При вставке данных обязательно использовать batch-processing. Разобраться что это такое, для чего используется и как реализовать
 - Необязательно. Реализовать версию без batch-processing, сравнить
 - производительность
-
-Реализацию разместить в io.ylab.intensive.lesson04.filesort.FileSortImpl
+- Реализацию разместить в io.ylab.intensive.lesson04.filesort.FileSortImpl
