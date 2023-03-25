@@ -9,32 +9,38 @@ package io.ylab.intensive.lesson04.persistentmap.sql;
  */
 public class Query {
     
-    public static final String CONTAINS = ""
-            + "SELECT \"key\" "
-            + "FROM persistent_map "
-            + "WHERE map_name=? "
-            + "AND \"key\"=?;";
+    private static final String IS_NULL = " IS NULL";
+    private static final String VALUE = "=?";
     
-    public static final String GET_KEYS = ""
-            + "SELECT \"key\" "
-            + "FROM persistent_map "
-            + "WHERE map_name=?;";
+    public static String getQuery(boolean nameIsNull, boolean keyIsNull) {
+        String mapName = nameIsNull ? IS_NULL : VALUE;
+        String key = keyIsNull ? IS_NULL : VALUE;
+        String query = String.format("SELECT value FROM persistent_map WHERE map_name%s AND \"key\"%s;", mapName, key);
+        
+        return query;
+    }
     
-    public static final String GET = ""
-            + "SELECT value "
-            + "FROM persistent_map "
-            + "WHERE map_name=? "
-            + "AND \"key\"=?;";
+    public static String getKeysQuery(boolean nameIsNull) {
+        String mapName = nameIsNull ? IS_NULL : VALUE;
+        String query = String.format("SELECT \"key\" FROM persistent_map WHERE map_name%s AND value IS NOT NULL;", mapName);
+        
+        return query;
+    }
     
-    public static final String REMOVE = ""
-            + "DELETE FROM persistent_map "
-            + "WHERE map_name=? "
-            + "AND \"key\"=?;";
+    public static String removeQuery(boolean nameIsNull, boolean keyIsNull) {
+        String mapName = nameIsNull ? IS_NULL : VALUE;
+        String key = keyIsNull ? IS_NULL : VALUE;
+        String query = String.format("DELETE FROM persistent_map WHERE map_name%s AND \"key\"%s;", mapName, key);
+        
+        return query;
+    }
     
-    public static final String PUT = ""
-            + "INSERT INTO persistent_map (map_name, \"key\", value) "
-            + "VALUES(?, ?, ?);";
+    public static String putQuery() {
+       return "INSERT INTO persistent_map (map_name, \"key\", value) VALUES(?, ?, ?);";
+    }
     
-    public static final String CLEAR = "TRUNCATE persistent_map;";    
+    public static String clearQuery() {
+       return "TRUNCATE persistent_map;";
+    } 
 
 }
