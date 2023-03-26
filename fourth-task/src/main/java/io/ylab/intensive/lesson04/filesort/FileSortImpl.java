@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 public class FileSortImpl implements FileSorter {
 
+    private static final int BATCH_SIZE = 5_000;
     private DataSource dataSource;
 
     public FileSortImpl(DataSource dataSource) {
@@ -35,7 +36,7 @@ public class FileSortImpl implements FileSorter {
             saveAll(numbers);
             numbers = getNumbers();
             sorted = createFile(numbers, "sorted.txt");
-        } catch (Exception e) {
+        } catch (IOException | SQLException e) {
             Logger.getLogger(FileSortImpl.class.getName()).log(Level.SEVERE, e.getMessage());
         } finally {
             return sorted;
@@ -54,17 +55,19 @@ public class FileSortImpl implements FileSorter {
         }
     }
 
-    private int[] saveAll(List<Long> numbers) throws SQLException {
+    private void saveAll(List<Long> numbers) throws SQLException {
         try (Connection conn = dataSource.getConnection(); 
                 PreparedStatement ps = conn.prepareStatement("INSERT INTO numbers VALUES (?)");) {
 
-            for (Long l: numbers) {
-                ps.setLong(1, l);
+            for (int i = 0; i < numbers.size(); i++) {
+                Long n = numbers.get(i);
+                ps.setLong(1, n);
                 ps.addBatch();
+                if ((i + 1) % BATCH_SIZE == 0 || (i + 1) == numbers.size()) {
+                    ps.executeBatch();
+                }
             }
-            int[] ids = ps.executeBatch();
             
-            return ids;
         }
     }
 
