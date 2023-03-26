@@ -18,14 +18,19 @@ import java.util.logging.Logger;
 public class Send {
 
     private final static String QUEUE_NAME = "durable_queue1";//"hello";
+    private static final String EXCHANGE_NAME = "logs";
 
     public static void sendMessage(ConnectionFactory factory, String message) {
         try (Connection connection = factory.newConnection(); 
                 Channel channel = connection.createChannel()) {
 
-            boolean durable = true;
-            channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
-            channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+//            boolean durable = true;
+//            channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
+//            channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+
+            channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+            
             System.out.println(" [x] Sent '" + message + "'");
 
         } catch (IOException | TimeoutException ex) {

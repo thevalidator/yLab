@@ -17,7 +17,8 @@ import java.util.logging.Logger;
  */
 public class Reciever {
 
-    private final static String QUEUE_NAME = "durable_queue1";//"hello";
+    //private final static String QUEUE_NAME = "durable_queue1";//"hello";
+    private static final String EXCHANGE_NAME = "logs";
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -25,7 +26,11 @@ public class Reciever {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+        //channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, EXCHANGE_NAME, "");
+        
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         int prefetchCount = 1;
@@ -45,17 +50,19 @@ public class Reciever {
 
         };
         boolean isHandled = true;
-        channel.basicConsume(QUEUE_NAME, isHandled, deliverCallback, consumerTag -> {
+        //channel.basicConsume(QUEUE_NAME, isHandled, deliverCallback, consumerTag -> {
+        channel.basicConsume(queueName, isHandled, deliverCallback, consumerTag -> {
         });
     }
 
     private static void doWork(String task) throws InterruptedException {
-        int counter = 0;
-        for (char ch: task.toCharArray()) {
-            if (ch == '.') {
-                counter++;
-            }
-        }
-        TimeUnit.SECONDS.sleep(counter);
+//        int counter = 0;
+//        for (char ch: task.toCharArray()) {
+//            if (ch == '.') {
+//                counter++;
+//            }
+//        }
+//        TimeUnit.SECONDS.sleep(counter);
+        System.out.println("working " + Thread.currentThread().getName());
     }
 }
