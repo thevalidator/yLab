@@ -2,9 +2,10 @@ package io.ylab.intensive.lesson04.movie;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,7 +27,9 @@ public class MovieLoaderImpl implements MovieLoader {
 
     @Override
     public void loadData(File file) {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (FileInputStream is = new FileInputStream(file);
+                InputStreamReader isr = new InputStreamReader(is, "Windows-1252");
+                BufferedReader br = new BufferedReader(isr);) {
 
             List<Movie> movies = new ArrayList<>();
             String line;
