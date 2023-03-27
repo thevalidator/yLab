@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class Reciever {
 
     //private final static String QUEUE_NAME = "durable_queue1";//"hello";
-    private static final String EXCHANGE_NAME = "logs1";
+    private static final String EXCHANGE_NAME = "logs2";
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -26,18 +26,23 @@ public class Reciever {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        //channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+//        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+
 ////        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
 ////        String queueName = channel.queueDeclare().getQueue();
 ////        channel.queueBind(queueName, EXCHANGE_NAME, "");
     
-        channel.exchangeDeclare(EXCHANGE_NAME, "direct");
-        String queueName = channel.queueDeclare().getQueue();
+//////        channel.exchangeDeclare(EXCHANGE_NAME, "direct");
+//////        String queueName = channel.queueDeclare().getQueue();       
+//////        String severities = "white,black";
+//////        for (String severity : severities.split(",")) {
+//////            channel.queueBind(queueName, EXCHANGE_NAME, severity);
+//////        }
         
-        String severities = "white,black";
-        for (String severity : severities.split(",")) {
-            channel.queueBind(queueName, EXCHANGE_NAME, severity);
-        }
+        channel.exchangeDeclare(EXCHANGE_NAME, "topic");
+        String queueName = channel.queueDeclare().getQueue();
+        String bindingKey = "*.red.*";
+        channel.queueBind(queueName, EXCHANGE_NAME, bindingKey);
         
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
@@ -46,7 +51,8 @@ public class Reciever {
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-            System.out.println(" [x] Received '" + message + "'");
+            System.out.println(" [x] Received '" + delivery.getEnvelope().getRoutingKey() 
+                    + "':'" + message + "'");
 
             try {
                 doWork(message);
