@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class Reciever {
 
     //private final static String QUEUE_NAME = "durable_queue1";//"hello";
-    private static final String EXCHANGE_NAME = "logs";
+    private static final String EXCHANGE_NAME = "logs1";
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -27,9 +27,17 @@ public class Reciever {
         Channel channel = connection.createChannel();
 
         //channel.queueDeclare(QUEUE_NAME, true, false, false, null);
-        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+////        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+////        String queueName = channel.queueDeclare().getQueue();
+////        channel.queueBind(queueName, EXCHANGE_NAME, "");
+    
+        channel.exchangeDeclare(EXCHANGE_NAME, "direct");
         String queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, EXCHANGE_NAME, "");
+        
+        String severities = "white,black";
+        for (String severity : severities.split(",")) {
+            channel.queueBind(queueName, EXCHANGE_NAME, severity);
+        }
         
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 

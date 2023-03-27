@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class Send {
 
     private final static String QUEUE_NAME = "durable_queue1";//"hello";
-    private static final String EXCHANGE_NAME = "logs";
+    private static final String EXCHANGE_NAME = "logs1";
 
     public static void sendMessage(ConnectionFactory factory, String message) {
         try (Connection connection = factory.newConnection(); 
@@ -28,8 +28,12 @@ public class Send {
 //            channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
 //            channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
 
-            channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
-            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+////            channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+////            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+            
+            channel.exchangeDeclare(EXCHANGE_NAME, "direct");
+            String severity = "black";
+            channel.basicPublish(EXCHANGE_NAME, severity, null, message.getBytes("UTF-8"));
             
             System.out.println(" [x] Sent '" + message + "'");
 
