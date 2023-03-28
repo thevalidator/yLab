@@ -50,4 +50,9 @@ public class Person {
   public void setMiddleName(String middleName) {
     this.middleName = middleName;
   }
+
+    @Override
+    public String toString() {
+        return String.format("Person {id='%d' name='%s' lastName='%s' middleName='%s'}", id, name, lastName, middleName);
+    }
 }
