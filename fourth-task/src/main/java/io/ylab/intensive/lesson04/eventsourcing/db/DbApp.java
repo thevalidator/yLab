@@ -25,12 +25,13 @@ public class DbApp {
 
     public static void main(String[] args) throws Exception {
         
-        DataSource dataSource = initDb();
         ObjectMapper mapper = new ObjectMapper();
-        
-        try (Connection dbConn = dataSource.getConnection();) {
+
+        try {
+            DataSource dataSource = initDb();
+            Connection dbConn = dataSource.getConnection();
             dbConn.setAutoCommit(true);
-            DbHandler dbHandler = new DbHandlerImpl();
+            DbHandler dbHandler = new DbHandlerImpl(dbConn);
             ConnectionFactory connectionFactory = initMQ();
             com.rabbitmq.client.Connection brokerConn = connectionFactory.newConnection();
             Channel channel = brokerConn.createChannel();
@@ -67,8 +68,9 @@ public class DbApp {
             channel.basicConsume(queueName, isHandled, deliverCallback, consumerTag -> {
             });
 
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
-
 
     }
 
