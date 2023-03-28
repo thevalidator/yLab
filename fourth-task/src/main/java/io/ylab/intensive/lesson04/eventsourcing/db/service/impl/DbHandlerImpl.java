@@ -38,7 +38,8 @@ public class DbHandlerImpl implements DbHandler {
             setValuesForDeleteStatement(ps, p);
             int result = ps.executeUpdate();
             if (result == 0) {
-                Logger.getLogger(DbHandlerImpl.class.getName()).log(Level.INFO, "Delete was unsuccessfull. Reason: no such person");
+                Logger.getLogger(DbHandlerImpl.class.getName())
+                        .log(Level.INFO, "Delete was unsuccessfull. Reason: no such person with id={0}", p.getId());
             }
         } catch (SQLException ex) {
             Logger.getLogger(DbHandlerImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
