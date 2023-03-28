@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class DbHandlerImpl implements DbHandler {
     
-    private Connection connection;
+    private final Connection connection;
 
     public DbHandlerImpl(Connection connection) {
         this.connection = connection;
@@ -36,7 +36,10 @@ public class DbHandlerImpl implements DbHandler {
     public void deletePerson(Person p) {
         try (PreparedStatement ps = connection.prepareStatement(Query.DELETE);) {
             setValuesForDeleteStatement(ps, p);
-            ps.execute();
+            int result = ps.executeUpdate();
+            if (result == 0) {
+                Logger.getLogger(DbHandlerImpl.class.getName()).log(Level.INFO, "Delete was unsuccessfull. Reason: no such person");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(DbHandlerImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
