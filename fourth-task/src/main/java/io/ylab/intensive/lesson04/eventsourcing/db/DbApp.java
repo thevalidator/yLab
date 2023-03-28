@@ -14,6 +14,7 @@ import io.ylab.intensive.lesson04.RabbitMQUtil;
 import io.ylab.intensive.lesson04.eventsourcing.communication.message.ActionType;
 import io.ylab.intensive.lesson04.eventsourcing.communication.message.Message;
 import io.ylab.intensive.lesson04.eventsourcing.communication.routing.Data;
+import static io.ylab.intensive.lesson04.eventsourcing.communication.routing.Data.QUEUE_NAME;
 import io.ylab.intensive.lesson04.eventsourcing.db.service.DbHandler;
 import io.ylab.intensive.lesson04.eventsourcing.db.service.impl.DbHandlerImpl;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +37,7 @@ public class DbApp {
             com.rabbitmq.client.Connection brokerConn = connectionFactory.newConnection();
             Channel channel = brokerConn.createChannel();
             channel.exchangeDeclare(Data.EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
-            String queueName = "persona";//channel.queueDeclare().getQueue();
+            String queueName = QUEUE_NAME;
             String bindingKey = "db.person.*";
             
             channel.queueDeclare(queueName, true, false, false, null);
