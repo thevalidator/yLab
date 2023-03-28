@@ -16,7 +16,7 @@ class Person {
 
 #### Архитектура представлена ниже:
 
-![Architecture](https://github.com/thevalidator/yLab/raw/fourth-task/fourth-task/src/main/java/io/ylab/intensive/lesson04/eventsourcing/architecture.png)
+![Architecture](https://github.com/thevalidator/yLab/blob/fourth-task/fourth-task/src/main/java/io/ylab/intensive/lesson04/eventsourcing/architecture.png)
 ------------
 
 
