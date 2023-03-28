@@ -28,7 +28,8 @@ public class ApiApp {
         // Тут пишем создание PersonApi, запуск и демонстрацию работы
         try (Connection connection = connectionFactory.newConnection(); Channel channel = connection.createChannel()) {
 
-            channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);
+            channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
+            
 
 //            boolean durable = true;
             PersonApi api = new PersonApiImpl(DbUtil.buildDataSource().getConnection(), channel);
