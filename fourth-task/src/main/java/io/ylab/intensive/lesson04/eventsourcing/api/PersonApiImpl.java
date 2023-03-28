@@ -8,8 +8,10 @@ import java.util.List;
 import io.ylab.intensive.lesson04.eventsourcing.Person;
 import io.ylab.intensive.lesson04.eventsourcing.api.sql.Query;
 import io.ylab.intensive.lesson04.eventsourcing.communication.message.ActionType;
+import static io.ylab.intensive.lesson04.eventsourcing.communication.message.ActionType.DELETE;
+import static io.ylab.intensive.lesson04.eventsourcing.communication.message.ActionType.SAVE;
 import io.ylab.intensive.lesson04.eventsourcing.communication.message.Message;
-import static io.ylab.intensive.lesson04.eventsourcing.communication.routing.Data.EXCHANGE_NAME;
+import static io.ylab.intensive.lesson04.eventsourcing.communication.routing.Data.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
@@ -38,9 +40,9 @@ public class PersonApiImpl implements PersonApi {
     @Override
     public void deletePerson(Long personId) {
         try {
-            String message = objectMapper.writeValueAsString(new Message(new Person(personId, null, null, null), ActionType.DELETE));
-            String routingKey = "db.person.delete";
-            channel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));
+            String message = objectMapper.writeValueAsString(new Message(
+                    new Person(personId, null, null, null), DELETE));
+            channel.basicPublish(EXCHANGE_NAME, DELETE_ROUTING_KEY, null, message.getBytes("UTF-8"));
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
             Logger.getLogger(PersonApiImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -53,9 +55,8 @@ public class PersonApiImpl implements PersonApi {
     public void savePerson(Long personId, String firstName, String lastName, String middleName) {
         try {
             String message = objectMapper.writeValueAsString(new Message(
-                    new Person(personId, firstName, lastName, middleName), ActionType.SAVE));
-            String routingKey = "db.person.save";
-            channel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));
+                    new Person(personId, firstName, lastName, middleName), SAVE));
+            channel.basicPublish(EXCHANGE_NAME, SAVE_ROUTING_KEY, null, message.getBytes("UTF-8"));
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
             Logger.getLogger(PersonApiImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

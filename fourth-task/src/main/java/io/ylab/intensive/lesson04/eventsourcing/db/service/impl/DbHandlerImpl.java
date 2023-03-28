@@ -30,7 +30,6 @@ public class DbHandlerImpl implements DbHandler {
         } catch (SQLException ex) {
             Logger.getLogger(DbHandlerImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
-        System.out.println("===>>> Person " + p.getName() + " " + p.getLastName() + " saved");
     }
 
     @Override
@@ -41,8 +40,6 @@ public class DbHandlerImpl implements DbHandler {
         } catch (SQLException ex) {
             Logger.getLogger(DbHandlerImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
-        System.out.println("===>>> Person " + p.getName() + " "  + p.getLastName() + " deleted");
-        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private void setValuesForSaveStatement(PreparedStatement statement, Person person) throws SQLException {
