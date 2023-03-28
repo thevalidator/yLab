@@ -2,12 +2,13 @@ package io.ylab.intensive.lesson04.eventsourcing.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import java.util.List;
 
 import io.ylab.intensive.lesson04.eventsourcing.Person;
 import io.ylab.intensive.lesson04.eventsourcing.api.sql.Query;
-import io.ylab.intensive.lesson04.eventsourcing.communication.message.ActionType;
 import static io.ylab.intensive.lesson04.eventsourcing.communication.message.ActionType.DELETE;
 import static io.ylab.intensive.lesson04.eventsourcing.communication.message.ActionType.SAVE;
 import io.ylab.intensive.lesson04.eventsourcing.communication.message.Message;
@@ -30,11 +31,16 @@ public class PersonApiImpl implements PersonApi {
 
     private final Connection connection;
     private final Channel channel;
+    private final BasicProperties props;
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     public PersonApiImpl(Connection connection, Channel channel) {
         this.connection = connection;
         this.channel = channel;
+        props = new AMQP.BasicProperties().builder()
+                .deliveryMode(2)
+                .contentType("application/json")
+                .build();
     }
 
     @Override
@@ -42,7 +48,7 @@ public class PersonApiImpl implements PersonApi {
         try {
             String message = objectMapper.writeValueAsString(new Message(
                     new Person(personId, null, null, null), DELETE));
-            channel.basicPublish(EXCHANGE_NAME, DELETE_ROUTING_KEY, null, message.getBytes("UTF-8"));
+            channel.basicPublish(EXCHANGE_NAME, DELETE_ROUTING_KEY, props, message.getBytes("UTF-8"));
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
             Logger.getLogger(PersonApiImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -56,7 +62,7 @@ public class PersonApiImpl implements PersonApi {
         try {
             String message = objectMapper.writeValueAsString(new Message(
                     new Person(personId, firstName, lastName, middleName), SAVE));
-            channel.basicPublish(EXCHANGE_NAME, SAVE_ROUTING_KEY, null, message.getBytes("UTF-8"));
+            channel.basicPublish(EXCHANGE_NAME, SAVE_ROUTING_KEY, props, message.getBytes("UTF-8"));
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
             Logger.getLogger(PersonApiImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
