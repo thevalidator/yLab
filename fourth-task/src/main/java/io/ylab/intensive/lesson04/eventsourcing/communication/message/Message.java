@@ -4,6 +4,7 @@
 
 package io.ylab.intensive.lesson04.eventsourcing.communication.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.ylab.intensive.lesson04.eventsourcing.Person;
 
@@ -11,6 +12,7 @@ import io.ylab.intensive.lesson04.eventsourcing.Person;
  * @author thevalidator <the.validator@yandex.ru>
  */
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Message {
 
     private final Person person;

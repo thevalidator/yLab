@@ -1,5 +1,8 @@
 package io.ylab.intensive.lesson04.eventsourcing;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Person {
   private Long id;
   private String name;
