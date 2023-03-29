@@ -25,21 +25,23 @@ import java.util.logging.Logger;
 public class DbApp {
 
     public static void main(String[] args) throws Exception {
-        
-        ObjectMapper mapper = new ObjectMapper();
 
+        ObjectMapper mapper = new ObjectMapper();
+        Connection dbConn = null;
+        com.rabbitmq.client.Connection brokerConn = null;
+        Channel channel = null;
         try {
             DataSource dataSource = initDb();
-            Connection dbConn = dataSource.getConnection();
+            dbConn = dataSource.getConnection();
             dbConn.setAutoCommit(true);
             DbHandler dbHandler = new DbHandlerImpl(dbConn);
             ConnectionFactory connectionFactory = initMQ();
-            com.rabbitmq.client.Connection brokerConn = connectionFactory.newConnection();
-            Channel channel = brokerConn.createChannel();
+            brokerConn = connectionFactory.newConnection();
+            channel = brokerConn.createChannel();
             channel.exchangeDeclare(Data.EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
             String queueName = QUEUE_NAME;
             String bindingKey = "db.person.*";
-            
+
             channel.queueDeclare(queueName, true, false, false, null);
             channel.queueBind(queueName, Data.EXCHANGE_NAME, bindingKey);
             int prefetchCount = 1;
@@ -47,11 +49,8 @@ public class DbApp {
 
             Logger.getLogger(DbApp.class.getName()).log(Level.INFO, " [*] App started, waiting for messages...");
 
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {                
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String incomingMessage = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                //String logMsg = " [x] Received '" + delivery.getEnvelope().getRoutingKey() + "':'" + incomingMessage + "'";
-                //Logger.getLogger(DbApp.class.getName()).log(Level.INFO, "{0} {1}", new Object[]{logMsg, Thread.currentThread().getName()});
-
                 try {
                     Message message = mapper.readValue(incomingMessage, Message.class);
                     if (message.getAction().equals(ActionType.SAVE)) {
@@ -59,21 +58,26 @@ public class DbApp {
                     } else {
                         dbHandler.deletePerson(message.getPerson());
                     }
-
                 } catch (JsonProcessingException ex) {
                     Logger.getLogger(DbApp.class.getName()).log(Level.SEVERE, ex.getMessage());
-                } 
-//                finally {
-//                    System.out.println(" [x] Done " + Thread.currentThread().getName());
-//                }
-
+                }
             };
             boolean isHandled = true;
             channel.basicConsume(queueName, isHandled, deliverCallback, consumerTag -> {
             });
 
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            Logger.getLogger(DbApp.class.getName()).log(Level.SEVERE, null, e);
+            if (channel != null) {
+                channel.close();
+            }
+            if (brokerConn != null) {
+                brokerConn.close();
+            }
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            System.exit(1);
         }
 
     }
