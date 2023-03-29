@@ -22,11 +22,10 @@ public class ApiApp {
         ConnectionFactory connectionFactory = initMQ();
 
         // Тут пишем создание PersonApi, запуск и демонстрацию работы
-        try (Connection connection = connectionFactory.newConnection(); 
-                Channel channel = connection.createChannel()) {
+        try (Connection connection = connectionFactory.newConnection(); Channel channel = connection.createChannel()) {
 
             channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
-            
+
             PersonApi api = new PersonApiImpl(DbUtil.buildDataSource().getConnection(), channel);
 
             Scanner sc = new Scanner(System.in);
@@ -41,30 +40,7 @@ public class ApiApp {
             String input;
             while (!(input = sc.nextLine()).equals("exit")) {
                 try {
-                    if (input.startsWith("s ")) {
-                        String[] data = input.substring(2).split(";");
-                        api.savePerson(Long.valueOf(data[0]), data[1], data[2], data[3]);
-                    } else if (input.startsWith("d ")) {
-                        api.deletePerson(Long.valueOf(input.substring(2)));
-                    } else if (input.startsWith("p ")) {
-                        Person person = api.findPerson(Long.valueOf(input.substring(2)));
-                        if (person != null) {
-                            System.out.println(person);
-                        } else {
-                            System.out.println("No such person");
-                        }
-                    } else if (input.equals("all")) {
-                        List<Person> persons = api.findAll();
-                        if (persons.isEmpty()) {
-                            System.out.println("No persons in DB");
-                        } else {
-                            for (Person person: persons) {
-                                System.out.println(person);
-                            }
-                        }
-                    } else {
-                        throw new IllegalArgumentException();
-                    }
+                    handleInput(input, api);
                 } catch (Exception e) {
                     if (e instanceof IllegalArgumentException
                             || e instanceof NumberFormatException
@@ -85,5 +61,32 @@ public class ApiApp {
 
     private static ConnectionFactory initMQ() throws Exception {
         return RabbitMQUtil.buildConnectionFactory();
+    }
+
+    private static void handleInput(String input, PersonApi api) {
+        if (input.startsWith("s ")) {
+            String[] data = input.substring(2).split(";");
+            api.savePerson(Long.valueOf(data[0]), data[1], data[2], data[3]);
+        } else if (input.startsWith("d ")) {
+            api.deletePerson(Long.valueOf(input.substring(2)));
+        } else if (input.startsWith("p ")) {
+            Person person = api.findPerson(Long.valueOf(input.substring(2)));
+            if (person != null) {
+                System.out.println(person);
+            } else {
+                System.out.println("No such person");
+            }
+        } else if (input.equals("all")) {
+            List<Person> persons = api.findAll();
+            if (persons.isEmpty()) {
+                System.out.println("No persons in DB");
+            } else {
+                for (Person person: persons) {
+                    System.out.println(person);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 }
