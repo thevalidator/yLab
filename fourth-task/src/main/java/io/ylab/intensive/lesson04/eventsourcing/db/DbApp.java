@@ -96,7 +96,7 @@ public class DbApp {
                 + "middle_name varchar\n"
                 + ")";
         DataSource dataSource = DbUtil.buildDataSource();
-        //DbUtil.applyDdl(ddl, dataSource);
+        DbUtil.applyDdl(ddl, dataSource);
         return dataSource;
     }
 }
