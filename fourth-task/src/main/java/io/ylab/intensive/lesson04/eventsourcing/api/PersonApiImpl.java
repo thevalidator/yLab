@@ -39,6 +39,7 @@ public class PersonApiImpl implements PersonApi {
         this.channel = channel;
         props = new AMQP.BasicProperties().builder()
                 .deliveryMode(2)
+                .expiration("1800000")  //30 minutes lifetime
                 .contentType("application/json")
                 .build();
     }
