@@ -103,47 +103,31 @@ public class MovieLoaderImpl implements MovieLoader {
 
     private void setStatementValues(PreparedStatement ps, long id, Movie m) throws SQLException {
         ps.setLong(1, id);
-        if (m.getYear() != null) {
-            ps.setInt(2, m.getYear());
-        } else {
-            ps.setNull(2, Types.INTEGER);
-        }
-        if (m.getLength() != null) {
-            ps.setInt(3, m.getLength());
-        } else {
-            ps.setNull(3, Types.INTEGER);
-        }
-        if (m.getTitle() != null) {
-            ps.setString(4, m.getTitle());
-        } else {
-            ps.setNull(4, Types.VARCHAR);
-        }
-        if (m.getSubject() != null) {
-            ps.setString(5, m.getSubject());
-        } else {
-            ps.setNull(5, Types.VARCHAR);
-        }
-        if (m.getActors() != null) {
-            ps.setString(6, m.getActors());
-        } else {
-            ps.setNull(6, Types.VARCHAR);
-        }
-        if (m.getActress() != null) {
-            ps.setString(7, m.getActress());
-        } else {
-            ps.setNull(7, Types.VARCHAR);
-        }
-        if (m.getDirector() != null) {
-            ps.setString(8, m.getDirector());
-        } else {
-            ps.setNull(8, Types.VARCHAR);
-        }
-        if (m.getPopularity() != null) {
-            ps.setInt(9, m.getPopularity());
-        } else {
-            ps.setNull(9, Types.INTEGER);
-        }
+        setInteger(ps, 2, m.getYear());
+        setInteger(ps, 3, m.getLength());
+        setString(ps, 4, m.getTitle());
+        setString(ps, 5, m.getSubject());
+        setString(ps, 6, m.getActors());
+        setString(ps, 7, m.getActress());
+        setString(ps, 8, m.getDirector());
+        setInteger(ps, 9, m.getPopularity());
         ps.setBoolean(10, m.getAwards());
+    }
+
+    private void setInteger(PreparedStatement ps, int column, Integer value) throws SQLException {
+        if (value != null) {
+            ps.setInt(column, value);
+        } else {
+            ps.setNull(column, Types.INTEGER);
+        }
+    }
+
+    private void setString(PreparedStatement ps, int column, String value) throws SQLException {
+        if (value != null) {
+            ps.setString(column, value);
+        } else {
+            ps.setNull(column, Types.VARCHAR);
+        }
     }
 
 }
