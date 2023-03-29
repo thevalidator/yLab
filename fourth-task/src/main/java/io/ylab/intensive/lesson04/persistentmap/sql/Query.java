@@ -40,7 +40,7 @@ public class Query {
     }
     
     public static String clearQuery() {
-       return "TRUNCATE persistent_map;";
+       return "DELETE FROM persistent_map WHERE map_name=?;";
     } 
 
 }

@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -96,8 +95,9 @@ public class PersistentMapImpl implements PersistentMap {
     @Override
     public void clear() throws SQLException {
         try (Connection conn = dataSource.getConnection();
-                Statement st = conn.createStatement();) {
-            st.execute(clearQuery());
+                PreparedStatement ps = conn.prepareStatement(clearQuery());) {
+            ps.setString(1, name);
+            ps.executeUpdate();
         }
     }
 
