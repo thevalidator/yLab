@@ -19,6 +19,8 @@ import io.ylab.intensive.lesson04.eventsourcing.db.service.DbHandler;
 import io.ylab.intensive.lesson04.eventsourcing.db.service.impl.DbHandlerImpl;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,8 +43,11 @@ public class DbApp {
             channel.exchangeDeclare(Data.EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
             String queueName = QUEUE_NAME;
             String bindingKey = "db.person.*";
-
-            channel.queueDeclare(queueName, true, false, false, null);
+            
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("x-max-length", 10_000);              //max queue length
+            
+            channel.queueDeclare(queueName, true, false, false, arguments);
             channel.queueBind(queueName, Data.EXCHANGE_NAME, bindingKey);
             int prefetchCount = 1;
             channel.basicQos(prefetchCount);
@@ -67,14 +72,14 @@ public class DbApp {
             });
 
         } catch (Exception e) {
-            Logger.getLogger(DbApp.class.getName()).log(Level.SEVERE, null, e);
-            if (channel != null) {
+            Logger.getLogger(DbApp.class.getName()).log(Level.SEVERE, "ERROR", e);
+            if (channel != null && channel.isOpen()) {
                 channel.close();
             }
-            if (brokerConn != null) {
+            if (brokerConn != null && brokerConn.isOpen()) {
                 brokerConn.close();
             }
-            if (dbConn != null) {
+            if (dbConn != null && !dbConn.isClosed()) {
                 dbConn.close();
             }
             System.exit(1);
