@@ -38,12 +38,10 @@ public class ApiApp {
                     + "5)            EXIT: exit\n"
                     + "\nEnter command:");
 
-            while (true) {
-                String input = sc.nextLine();
+            String input;
+            while (!(input = sc.nextLine()).equals("exit")) {
                 try {
-                    if (input.equals("exit")) {
-                        break;
-                    } else if (input.startsWith("s ")) {
+                    if (input.startsWith("s ")) {
                         String[] data = input.substring(2).split(";");
                         api.savePerson(Long.valueOf(data[0]), data[1], data[2], data[3]);
                     } else if (input.startsWith("d ")) {
