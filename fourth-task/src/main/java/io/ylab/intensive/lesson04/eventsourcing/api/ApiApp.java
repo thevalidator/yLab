@@ -18,11 +18,8 @@ import java.util.logging.Logger;
 
 public class ApiApp {
 
-    //{"person":{"id":1,"name":"Margo","lastName":"Williams","middleName":"Jeremy"},"action":"SAVE"}
     public static void main(String[] args) throws Exception {
 
-        //docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq
-        //docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.11-management
         ConnectionFactory connectionFactory = initMQ();
 
         // Тут пишем создание PersonApi, запуск и демонстрацию работы
@@ -30,8 +27,6 @@ public class ApiApp {
 
             channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
             
-
-//            boolean durable = true;
             PersonApi api = new PersonApiImpl(DbUtil.buildDataSource().getConnection(), channel);
 
             Scanner sc = new Scanner(System.in);
