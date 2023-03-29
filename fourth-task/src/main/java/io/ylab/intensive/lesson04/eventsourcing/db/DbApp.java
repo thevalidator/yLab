@@ -46,6 +46,7 @@ public class DbApp {
             
             Map<String, Object> arguments = new HashMap<>();
             arguments.put("x-max-length", 10_000);              //max queue length
+            //arguments.put("x-queue-mode", "lazy");
             
             channel.queueDeclare(queueName, true, false, false, arguments);
             channel.queueBind(queueName, Data.EXCHANGE_NAME, bindingKey);
