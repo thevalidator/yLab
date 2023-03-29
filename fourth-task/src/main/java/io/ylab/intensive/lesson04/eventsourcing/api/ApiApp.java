@@ -7,7 +7,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import io.ylab.intensive.lesson04.DbUtil;
 import io.ylab.intensive.lesson04.RabbitMQUtil;
 import io.ylab.intensive.lesson04.eventsourcing.Person;
-import io.ylab.intensive.lesson04.eventsourcing.api.service.Send;
 import static io.ylab.intensive.lesson04.eventsourcing.communication.routing.Data.EXCHANGE_NAME;
 import java.io.IOException;
 import java.util.List;
@@ -80,7 +79,7 @@ public class ApiApp {
             System.out.println("GOODBYE!");
 
         } catch (IOException | TimeoutException ex) {
-            Logger.getLogger(Send.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiApp.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
