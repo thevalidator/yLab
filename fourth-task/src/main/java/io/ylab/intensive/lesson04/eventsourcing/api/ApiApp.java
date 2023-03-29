@@ -22,7 +22,8 @@ public class ApiApp {
         ConnectionFactory connectionFactory = initMQ();
 
         // Тут пишем создание PersonApi, запуск и демонстрацию работы
-        try (Connection connection = connectionFactory.newConnection(); Channel channel = connection.createChannel()) {
+        try (Connection connection = connectionFactory.newConnection(); 
+                Channel channel = connection.createChannel()) {
 
             channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
             
