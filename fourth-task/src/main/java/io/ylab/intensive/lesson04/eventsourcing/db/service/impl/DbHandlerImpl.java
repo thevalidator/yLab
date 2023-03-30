@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2023 thevalidator
  */
-
 package io.ylab.intensive.lesson04.eventsourcing.db.service.impl;
 
 import io.ylab.intensive.lesson04.eventsourcing.Person;
@@ -13,9 +12,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class DbHandlerImpl implements DbHandler {
-    
+
     private final Connection connection;
 
     public DbHandlerImpl(Connection connection) {
@@ -59,6 +57,19 @@ public class DbHandlerImpl implements DbHandler {
 
     private void setValuesForDeleteStatement(PreparedStatement statement, Person person) throws SQLException {
         statement.setLong(1, person.getId());
+    }
+
+    @Override
+    public void closeConnection() {
+        if (connection != null) {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                Logger.getLogger(DbHandlerImpl.class.getName()).log(Level.SEVERE, e.getMessage());
+            }
+        }
     }
 
 }

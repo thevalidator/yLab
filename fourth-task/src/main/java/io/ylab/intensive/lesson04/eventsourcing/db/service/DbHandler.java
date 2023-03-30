@@ -14,4 +14,6 @@ public interface DbHandler {
 
     void deletePerson(Person p);
 
+    public void closeConnection();
+
 }
