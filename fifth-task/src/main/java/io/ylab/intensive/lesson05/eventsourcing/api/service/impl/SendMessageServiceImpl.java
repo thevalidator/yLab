@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @PropertySource("classpath:application.properties")
+//@PropertySource("classpath:api.properties")
 public class SendMessageServiceImpl implements SendMessageService {
     
     private final ObjectMapper objectMapper;
@@ -35,16 +36,16 @@ public class SendMessageServiceImpl implements SendMessageService {
     private final Channel channel;
     private final BasicProperties props;
     
-    @Value("${exchange.name}")
-    public String EXCHANGE_NAME;// = "person";
+    public String EXCHANGE_NAME;
     @Value("${route.key.save}")
-    public String SAVE_ROUTING_KEY;// = "db.person.save";
+    public String SAVE_ROUTING_KEY;
     @Value("${route.key.delete}")
-    public String DELETE_ROUTING_KEY;// = "db.person.delete";
+    public String DELETE_ROUTING_KEY;
 
     @Autowired
-    public SendMessageServiceImpl(ConnectionFactory connectionFactory, 
+    public SendMessageServiceImpl(@Value("${exchange.name}") String exchangeName,ConnectionFactory connectionFactory, 
             BasicProperties props, ObjectMapper objectMapper) throws IOException, TimeoutException {
+        EXCHANGE_NAME = exchangeName;
         connection = connectionFactory.newConnection();
         channel = connection.createChannel();
         channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
