@@ -31,7 +31,7 @@ public class PersonApiImpl implements PersonApi {
 
     @Override
     public void savePerson(Long personId, String firstName, String lastName, String middleName) {
-        messageService.savePerson(new Person(personId, lastName, lastName, middleName));
+        messageService.savePerson(new Person(personId, firstName, lastName, middleName));
     }
 
     @Override
