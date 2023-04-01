@@ -23,9 +23,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
+@PropertySource("classpath:application.properties")
 public class SendMessageServiceImpl implements SendMessageService {
     
     private final ObjectMapper objectMapper;
