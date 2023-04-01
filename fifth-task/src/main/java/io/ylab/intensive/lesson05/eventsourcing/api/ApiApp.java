@@ -1,5 +1,7 @@
 package io.ylab.intensive.lesson05.eventsourcing.api;
 
+import io.ylab.intensive.lesson05.eventsourcing.Person;
+import java.util.List;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class ApiApp {
@@ -10,7 +12,10 @@ public class ApiApp {
         applicationContext.start();
         PersonApi personApi = applicationContext.getBean(PersonApi.class);
         // пишем взаимодействие с PersonApi
-        personApi.findPerson(1L);
-        
+        List<Person> persons = personApi.findAll();
+        for (Person person: persons) {
+            System.out.printf("%d: %s %s %s\n", person.getId(), person.getName(), person.getLastName(), person.getMiddleName());
+        }
+
     }
 }
