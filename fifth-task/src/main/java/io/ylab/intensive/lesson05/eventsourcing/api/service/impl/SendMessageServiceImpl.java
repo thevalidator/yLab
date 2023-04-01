@@ -16,6 +16,7 @@ import static io.ylab.intensive.lesson05.eventsourcing.entity.message.ActionType
 import static io.ylab.intensive.lesson05.eventsourcing.entity.message.ActionType.SAVE;
 import io.ylab.intensive.lesson05.eventsourcing.entity.message.Message;
 import io.ylab.intensive.lesson05.eventsourcing.api.service.SendMessageService;
+import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeoutException;
@@ -28,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @PropertySource("classpath:application.properties")
-//@PropertySource("classpath:api.properties")
 public class SendMessageServiceImpl implements SendMessageService {
     
     private final ObjectMapper objectMapper;
@@ -72,6 +72,20 @@ public class SendMessageServiceImpl implements SendMessageService {
             channel.basicPublish(EXCHANGE_NAME, SAVE_ROUTING_KEY, props, message.getBytes("UTF-8"));
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
             Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @PreDestroy
+    public void preDestroy() {
+        try {
+            channel.close();
+        } catch (IOException | TimeoutException ex) {
+            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            connection.close();
         } catch (IOException ex) {
             Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

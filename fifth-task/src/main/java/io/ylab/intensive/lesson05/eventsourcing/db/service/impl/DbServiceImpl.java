@@ -6,6 +6,7 @@ package io.ylab.intensive.lesson05.eventsourcing.db.service.impl;
 import io.ylab.intensive.lesson05.eventsourcing.Person;
 import io.ylab.intensive.lesson05.eventsourcing.db.service.DbService;
 import io.ylab.intensive.lesson05.eventsourcing.db.sql.Query;
+import jakarta.annotation.PreDestroy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -27,19 +28,16 @@ public class DbServiceImpl implements DbService {
 
     @Override
     public void savePerson(Person p) {
-        //System.out.println("SAVED " + p.getName());
         try (PreparedStatement ps = connection.prepareStatement(Query.SAVE);) {
             setValuesForSaveStatement(ps, p);
             ps.execute();
         } catch (SQLException ex) {
             Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
-        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void deletePerson(Person p) {
-        //System.out.println("DELETED " + p.getName());
         try (PreparedStatement ps = connection.prepareStatement(Query.DELETE);) {
             setValuesForDeleteStatement(ps, p);
             int result = ps.executeUpdate();
@@ -50,7 +48,6 @@ public class DbServiceImpl implements DbService {
         } catch (SQLException ex) {
             Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
-        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private void setValuesForSaveStatement(PreparedStatement statement, Person person) throws SQLException {
@@ -66,6 +63,15 @@ public class DbServiceImpl implements DbService {
 
     private void setValuesForDeleteStatement(PreparedStatement statement, Person person) throws SQLException {
         statement.setLong(1, person.getId());
+    }
+    
+    @PreDestroy
+    public void preDestroy() {
+        try {
+            connection.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

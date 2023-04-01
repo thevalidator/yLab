@@ -7,6 +7,7 @@ package io.ylab.intensive.lesson05.eventsourcing.api.service.impl;
 import io.ylab.intensive.lesson05.eventsourcing.Person;
 import io.ylab.intensive.lesson05.eventsourcing.api.service.DbReadService;
 import io.ylab.intensive.lesson05.eventsourcing.api.sql.Query;
+import jakarta.annotation.PreDestroy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -76,6 +77,15 @@ public class DbReadServiceImpl implements DbReadService {
         }
         
         return persons;
+    }
+    
+    @PreDestroy
+    public void preDestroy() {
+        try {
+            connection.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DbReadServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

@@ -12,6 +12,7 @@ import com.rabbitmq.client.DeliverCallback;
 import com.rabbitmq.client.Delivery;
 import io.ylab.intensive.lesson05.eventsourcing.db.service.BrokerService;
 import io.ylab.intensive.lesson05.eventsourcing.db.service.IncomingMessageService;
+import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -28,8 +29,10 @@ import org.springframework.stereotype.Service;
 @PropertySource("classpath:application.properties")
 public class BrokerServiceImpl implements BrokerService, DeliverCallback {
     
-    private final Connection brokerConnection;
     private final IncomingMessageService messageService;
+    private final ConnectionFactory connectionFactory;
+    private Connection brokerConnection;
+    private Channel channel;
     @Value("${exchange.name}")
     public String EXCHANGE_NAME;
     @Value("${queue.name}")
@@ -37,15 +40,16 @@ public class BrokerServiceImpl implements BrokerService, DeliverCallback {
 
     @Autowired
     public BrokerServiceImpl(ConnectionFactory connectionFactory,
-            IncomingMessageService messageService) throws IOException, TimeoutException {
-        brokerConnection = connectionFactory.newConnection();
+            IncomingMessageService messageService) {
+        this.connectionFactory = connectionFactory;
         this.messageService = messageService;
     }
 
     @Override
-    public void start() throws IOException {
+    public void start() throws IOException, TimeoutException {
         //try {
-            Channel channel = brokerConnection.createChannel();
+            brokerConnection = connectionFactory.newConnection();
+            channel = brokerConnection.createChannel();
             channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
             String bindingKey = "db.person.*";
 
@@ -89,6 +93,20 @@ public class BrokerServiceImpl implements BrokerService, DeliverCallback {
     @Override
     public void stop() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @PreDestroy
+    public void preDestroy() {
+        try {
+            channel.close();
+        } catch (IOException | TimeoutException ex) {
+            Logger.getLogger(BrokerServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            brokerConnection.close();
+        } catch (IOException ex) {
+            Logger.getLogger(BrokerServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
