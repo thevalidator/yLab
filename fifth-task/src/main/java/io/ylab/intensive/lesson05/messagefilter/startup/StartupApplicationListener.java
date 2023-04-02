@@ -21,7 +21,9 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
@@ -29,13 +31,17 @@ import org.springframework.stereotype.Component;
  * @author thevalidator <the.validator@yandex.ru>
  */
 @Component
+@PropertySource("classpath:filter.properties")
 public class StartupApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
     
     private final Connection connection;
+    private final String dictionaryName;
 
     @Autowired
-    public StartupApplicationListener(ConnectionManager manager) {
+    public StartupApplicationListener(ConnectionManager manager, 
+            @Value("${dictionary.name}") String dictionaryName) {
         connection = manager.getDbConnection();
+        this.dictionaryName = dictionaryName;
     }
 
     @Override
@@ -70,7 +76,7 @@ public class StartupApplicationListener implements ApplicationListener<ContextRe
 
     private void fillTable() {
         int batchSize = 5_000;
-        try (InputStream is = new FileInputStream(new File("words.dict")); 
+        try (InputStream is = new FileInputStream(new File(dictionaryName)); 
                 LineNumberReader lr = new LineNumberReader(new InputStreamReader(is, "UTF-8")); 
                 PreparedStatement ps = connection.prepareStatement(Query.INSERT);) {
 
