@@ -4,9 +4,11 @@
 package io.ylab.intensive.lesson05.sqlquerybuilder.impl;
 
 import io.ylab.intensive.lesson05.sqlquerybuilder.DbService;
+import static io.ylab.intensive.lesson05.sqlquerybuilder.MetaData.COLUMN_NAME;
 import io.ylab.intensive.lesson05.sqlquerybuilder.Query;
 import jakarta.annotation.PreDestroy;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,7 +29,7 @@ public class DbServiceImpl implements DbService {
     public DbServiceImpl(DataSource dataSource) throws SQLException {
         connection = dataSource.getConnection();
     }
-    
+
     @PreDestroy
     public void preDestroy() {
         try {
@@ -48,8 +50,26 @@ public class DbServiceImpl implements DbService {
         } catch (SQLException ex) {
             Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
-        
+
         return tables;
     }
-    
+
+    @Override
+    public List<String> getTableColumns(String tableName) {
+        List<String> columns = new ArrayList<>();
+        try {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            try (ResultSet rs = databaseMetaData.getColumns(null, null, tableName, null)) {
+                while (rs.next()) {
+                    String columnName = rs.getString(COLUMN_NAME.name());
+                    columns.add(columnName);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return columns;
+    }
+
 }
