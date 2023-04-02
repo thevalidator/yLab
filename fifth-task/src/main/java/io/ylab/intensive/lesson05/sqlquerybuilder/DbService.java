@@ -13,4 +13,6 @@ public interface DbService {
 
     List<String> getAllTables();
 
+    List<String> getTableColumns(String tableName);
+
 }
