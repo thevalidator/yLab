@@ -20,13 +20,13 @@ public class Query {
             + "("
             + "SELECT 1 "
             + "FROM bad_word "
-            + "WHERE word = ? "
+            + "WHERE word = LOWER(?) "
             + "LIMIT 1"
             + ");";
 
     public static final String INSERT = ""
             + "INSERT INTO bad_word (word) "
-            + "VALUES(?);";
+            + "VALUES(LOWER(?));";
 
     public static final String CLEAR = "TRUNCATE bad_word;";
     
