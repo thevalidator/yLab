@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SQLQueryBuilderImpl implements SQLQueryBuilder {
-    
+
     private final DbService dbService;
 
     @Autowired
@@ -22,12 +22,29 @@ public class SQLQueryBuilderImpl implements SQLQueryBuilder {
 
     @Override
     public String queryForTable(String tableName) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<String> columns = dbService.getTableColumns(tableName);
+        return buildSelectQuery(tableName, columns);
     }
 
     @Override
     public List<String> getTables() throws SQLException {
         return dbService.getAllTables();
+    }
+
+    private String buildSelectQuery(String tableName, List<String> columns) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ");
+        if (columns.isEmpty()) {
+            sb.append("*");
+        } else {
+            for (String column: columns) {
+                sb.append(column).append(", ");
+            }
+            sb.setLength(sb.length() - 2);
+        }
+        sb.append(" FROM ").append(tableName).append(";");
+
+        return sb.toString();
     }
 
 }
