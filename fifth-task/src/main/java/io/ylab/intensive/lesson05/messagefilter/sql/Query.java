@@ -8,6 +8,8 @@ package io.ylab.intensive.lesson05.messagefilter.sql;
  */
 public class Query {
 
+    public static final String TABLE_NAME = "bad_word";
+
     public static final String DDL = ""
             + "CREATE TABLE bad_word ( "
             + "word varchar(50) NOT NULL, "
@@ -22,4 +24,10 @@ public class Query {
             + "LIMIT 1"
             + ");";
 
+    public static final String INSERT = ""
+            + "INSERT INTO bad_word (word) "
+            + "VALUES(?);";
+
+    public static final String CLEAR = "TRUNCATE bad_word;";
+    
 }
