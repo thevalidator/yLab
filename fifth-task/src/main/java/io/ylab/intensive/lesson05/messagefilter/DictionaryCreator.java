@@ -39,7 +39,7 @@ public class DictionaryCreator {
                 String[] separatedWords = line.trim().split(",( )?");
                 for (String w: separatedWords) {
                     if (!w.contains(" ")) {
-                        words.add(w);
+                        words.add(w.toLowerCase());
                     }
                 }
             }
