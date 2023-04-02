@@ -1,5 +1,7 @@
 package io.ylab.intensive.lesson05.eventsourcing.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.AMQP.BasicProperties;
 import javax.sql.DataSource;
 
 import com.rabbitmq.client.ConnectionFactory;
@@ -32,5 +34,21 @@ public class Config {
         connectionFactory.setPassword("guest");
         connectionFactory.setVirtualHost("/");
         return connectionFactory;
+    }
+    
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper;
+    }
+    
+    @Bean
+    public BasicProperties messageProps() {
+        BasicProperties props = new BasicProperties().builder()
+                .deliveryMode(2)
+                .expiration("1800000")  //30 minutes lifetime
+                .contentType("application/json")
+                .build();
+        return props;
     }
 }

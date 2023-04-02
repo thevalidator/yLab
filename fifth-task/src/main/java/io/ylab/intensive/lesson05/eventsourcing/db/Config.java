@@ -1,5 +1,6 @@
 package io.ylab.intensive.lesson05.eventsourcing.db;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
@@ -7,10 +8,15 @@ import com.rabbitmq.client.ConnectionFactory;
 import io.ylab.intensive.lesson05.DbUtil;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+@ComponentScan("io.ylab.intensive.lesson05.eventsourcing.db")
 public class Config {
 
   @Bean
+  
   public DataSource dataSource() throws SQLException {
     PGSimpleDataSource dataSource = new PGSimpleDataSource();
     dataSource.setServerName("localhost");
@@ -42,5 +48,11 @@ public class Config {
     connectionFactory.setVirtualHost("/");
     return connectionFactory;
   }
+  
+  @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper;
+    }
   
 }
