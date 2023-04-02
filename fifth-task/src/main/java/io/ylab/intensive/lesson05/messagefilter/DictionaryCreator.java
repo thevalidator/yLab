@@ -13,9 +13,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,7 +33,7 @@ public class DictionaryCreator {
                 OutputStream os = new FileOutputStream(dictionary); 
                 PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, "UTF-8"))) {
 
-            List<String> words = new ArrayList<>();
+            Set<String> words = new TreeSet<>();
             String line;
             while ((line = br.readLine()) != null && !line.isBlank()) {
                 String[] separatedWords = line.trim().split(",( )?");
