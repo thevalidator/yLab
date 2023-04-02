@@ -23,6 +23,9 @@ public class SQLQueryBuilderImpl implements SQLQueryBuilder {
     @Override
     public String queryForTable(String tableName) throws SQLException {
         List<String> columns = dbService.getTableColumns(tableName);
+        if (columns == null) {
+            return null;
+        }
         return buildSelectQuery(tableName, columns);
     }
 

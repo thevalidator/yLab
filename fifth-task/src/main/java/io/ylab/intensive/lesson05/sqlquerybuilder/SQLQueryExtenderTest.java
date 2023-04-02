@@ -13,6 +13,7 @@ public class SQLQueryExtenderTest {
         SQLQueryBuilder queryBuilder = applicationContext.getBean(SQLQueryBuilder.class);
         List<String> tables = queryBuilder.getTables();
         // вот так сгенерируем запросы для всех таблиц что есть в БД
+        tables.add("no_such_table");
         for (String tableName: tables) {
             System.out.println(queryBuilder.queryForTable(tableName));
         }
