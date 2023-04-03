@@ -4,13 +4,19 @@
 
 package io.ylab.intensive.lesson05.messagefilter.service;
 
-import java.sql.Connection;
+import com.rabbitmq.client.Channel;
 
 /**
  * @author thevalidator <the.validator@yandex.ru>
  */
 public interface ConnectionManager {
     
-    Connection getDbConnection();
+    java.sql.Connection getDbConnection();
+    
+    com.rabbitmq.client.Connection getBrokerConnection();
+    
+    Channel getInputChannel();
+    
+    Channel getOutputChannel();
 
 }
