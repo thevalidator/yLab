@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2023 thevalidator
  */
-package io.ylab.intensive.lesson05.messagefilter.startup;
+package io.ylab.intensive.lesson05.messagefilter.listener.startup;
 
 import io.ylab.intensive.lesson05.messagefilter.service.ConnectionManager;
 import io.ylab.intensive.lesson05.messagefilter.sql.Query;
