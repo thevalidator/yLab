@@ -31,3 +31,4 @@ replay_pid*
 *.pdf
 fourth-task/movies.csv
 fourth-task/sorted.txt
+/fifth-task/nbproject/
