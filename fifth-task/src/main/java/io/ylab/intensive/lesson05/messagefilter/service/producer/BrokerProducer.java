@@ -3,14 +3,15 @@
  */
 package io.ylab.intensive.lesson05.messagefilter.service.producer;
 
+import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.MessageProperties;
 import io.ylab.intensive.lesson05.messagefilter.service.ConnectionManager;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,22 +19,26 @@ import org.springframework.stereotype.Component;
 public class BrokerProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrokerProducer.class);
+    private final BasicProperties messageProperties;
     private final Channel channel;
     private final String queueName;
 
+    @Autowired
     public BrokerProducer(ConnectionManager manager,
-            @Value("${queue.out.name}") String queueName) throws IOException {
+            @Value("${queue.out.name}") String queueName,
+            BasicProperties messageProperties) throws IOException {
         
         this.queueName = queueName;
         channel = manager.getInputChannel();
         initChannel(channel, queueName);
+        this.messageProperties = messageProperties;
         LOGGER.info(" [*] Producer started...");
 
     }
 
     public void sendMessage(String message) throws IOException {
         channel.basicPublish("", queueName,
-                MessageProperties.PERSISTENT_TEXT_PLAIN,
+                messageProperties,
                 message.getBytes("UTF-8"));
     }
 
