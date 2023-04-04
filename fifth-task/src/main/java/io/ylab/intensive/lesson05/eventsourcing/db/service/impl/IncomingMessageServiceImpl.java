@@ -9,15 +9,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ylab.intensive.lesson05.eventsourcing.db.service.IncomingMessageService;
 import io.ylab.intensive.lesson05.eventsourcing.entity.message.ActionType;
 import io.ylab.intensive.lesson05.eventsourcing.entity.message.Message;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import io.ylab.intensive.lesson05.eventsourcing.db.service.DbService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class IncomingMessageServiceImpl implements IncomingMessageService {
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(IncomingMessageServiceImpl.class);
     private final ObjectMapper objectMapper;
     private final DbService dbService;
 
@@ -37,7 +38,7 @@ public class IncomingMessageServiceImpl implements IncomingMessageService {
                 dbService.deletePerson(message.getPerson());
             }
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(IncomingMessageServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
+            LOGGER.error(ex.getMessage());
         }
     }
 
