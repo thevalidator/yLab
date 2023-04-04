@@ -30,6 +30,7 @@ public class BrokerConsumer {
             @Value("${queue.in.name}") String inputQueue,
             SwearingSubstitutionService substitutionService,
             BrokerProducer producer) throws IOException {
+        
         this.producer = producer;
         this.substitutionService = substitutionService;
         Channel channel = manager.getInputChannel();
