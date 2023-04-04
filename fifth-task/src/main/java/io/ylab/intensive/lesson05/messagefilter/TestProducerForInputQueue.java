@@ -40,7 +40,7 @@ public class TestProducerForInputQueue {
                     + "\nEnter message:");
 
             String input;
-            while (!(input = sc.nextLine()).equals("exit")) {
+            while (!(input = sc.nextLine()).equals("exit") && !input.isBlank()) {
                 try {
                     channel.basicPublish("", "input",
                             MessageProperties.PERSISTENT_TEXT_PLAIN,
