@@ -11,7 +11,6 @@ public class Query {
     public static final String GET_ALL_TABLES_NAMES = ""
             + "SELECT tablename "
             + "FROM pg_catalog.pg_tables "
-            + "WHERE schemaname != 'pg_catalog' "
-            + "AND schemaname != 'information_schema';";
+            + "WHERE schemaname != 'information_schema';";
     
 }
