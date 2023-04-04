@@ -9,5 +9,7 @@ public class MessageFilterApp {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(Config.class);
         applicationContext.start();
 
+        //applicationContext.stop();
+
     }
 }
