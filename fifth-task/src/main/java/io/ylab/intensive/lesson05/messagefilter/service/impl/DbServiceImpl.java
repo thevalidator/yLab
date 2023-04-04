@@ -11,14 +11,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DbServiceImpl implements DbService {
     
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DbServiceImpl.class);
     private final Connection connection;
 
     @Autowired
@@ -35,8 +35,8 @@ public class DbServiceImpl implements DbService {
             if (rs.next()) {
                 isExists = rs.getBoolean(1);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
         
         return isExists;
