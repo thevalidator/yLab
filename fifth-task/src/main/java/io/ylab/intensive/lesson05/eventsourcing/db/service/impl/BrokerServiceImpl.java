@@ -18,8 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 @PropertySource("classpath:application.properties")
 public class BrokerServiceImpl implements BrokerService, DeliverCallback {
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(BrokerServiceImpl.class);
     private final IncomingMessageService messageService;
     private final ConnectionFactory connectionFactory;
     private Connection brokerConnection;
@@ -47,7 +48,6 @@ public class BrokerServiceImpl implements BrokerService, DeliverCallback {
 
     @Override
     public void start() throws IOException, TimeoutException {
-        //try {
             brokerConnection = connectionFactory.newConnection();
             channel = brokerConnection.createChannel();
             channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true);
@@ -55,7 +55,6 @@ public class BrokerServiceImpl implements BrokerService, DeliverCallback {
 
             Map<String, Object> arguments = new HashMap<>();
             arguments.put("x-max-length", 10_000);              //max queue length
-            //arguments.put("x-queue-mode", "lazy");
 
             channel.queueDeclare(QUEUE_NAME, true, false, false, arguments);
             channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, bindingKey);
@@ -63,25 +62,7 @@ public class BrokerServiceImpl implements BrokerService, DeliverCallback {
             channel.basicQos(prefetchCount);
             channel.basicConsume(QUEUE_NAME, true, this, tag -> {
             });
-            Logger.getLogger(BrokerServiceImpl.class.getName()).log(Level.INFO, " [*] App started, waiting for messages...");
-        //} catch (IOException e) {
-//            if (channel != null && channel.isOpen()) {
-//                try {
-//                    channel.close();
-//                } catch (IOException | TimeoutException e1) {
-//                    Logger.getLogger(BrokerServiceImpl.class.getName()).log(Level.SEVERE, e1.getMessage());
-//                }
-//            }
-//            if (brokerConnection != null && brokerConnection.isOpen()) {
-//                try {
-//                    brokerConnection.close();
-//                } catch (IOException e2) {
-//                    Logger.getLogger(BrokerServiceImpl.class.getName()).log(Level.SEVERE, e2.getMessage());
-//                }
-//            }
-//            db.closeConnection();
-//            throw new BrokerFailException(e.getMessage());
-//        }
+            LOGGER.info(" [*] App started, waiting for messages...");
     }
 
     @Override
@@ -92,7 +73,7 @@ public class BrokerServiceImpl implements BrokerService, DeliverCallback {
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        preDestroy();
     }
     
     @PreDestroy
@@ -100,12 +81,12 @@ public class BrokerServiceImpl implements BrokerService, DeliverCallback {
         try {
             channel.close();
         } catch (IOException | TimeoutException ex) {
-            Logger.getLogger(BrokerServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.info(ex.getMessage());
         }
         try {
             brokerConnection.close();
         } catch (IOException ex) {
-            Logger.getLogger(BrokerServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.info(ex.getMessage());
         }
     }
 
