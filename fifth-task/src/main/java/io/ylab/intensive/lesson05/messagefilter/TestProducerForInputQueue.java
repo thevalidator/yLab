@@ -36,8 +36,7 @@ public class TestProducerForInputQueue {
             channel.queueDeclare("input", true, false, false, arguments);
 
             Scanner sc = new Scanner(System.in);
-            System.out.println("AVAILABLE COMMANDS:\n"
-                    + "1)            EXIT: exit\n"
+            System.out.println("FOR EXIT TYPE 'exit' OR PRESS ENTER\n"
                     + "\nEnter message:");
 
             String input;
