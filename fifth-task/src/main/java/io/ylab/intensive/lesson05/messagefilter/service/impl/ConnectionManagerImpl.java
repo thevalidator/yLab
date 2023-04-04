@@ -10,9 +10,9 @@ import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConnectionManagerImpl implements ConnectionManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionManagerImpl.class);
     private final java.sql.Connection dbConnection;
     private final com.rabbitmq.client.Connection brokerConnection;
     private final Channel inputChannel;
@@ -30,6 +31,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
             ConnectionFactory connectionFactory,
             @Value("${queue.in.name}") String inputQueue,
             @Value("${queue.out.name}") String outputQueue) throws SQLException, IOException, TimeoutException {
+        
         dbConnection = dataSource.getConnection();
         brokerConnection = connectionFactory.newConnection();
         inputChannel = brokerConnection.createChannel();
@@ -60,9 +62,24 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @PreDestroy
     public void preDestroy() {
         try {
+            inputChannel.close();
+        } catch (IOException | TimeoutException e) {
+            LOGGER.error(e.getMessage());
+        }
+        try {
+            outputChannel.close();
+        } catch (IOException | TimeoutException e) {
+            LOGGER.error(e.getMessage());
+        }
+        try {
+            brokerConnection.close();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        try {
             dbConnection.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(ConnectionManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
