@@ -38,8 +38,8 @@ public class DictionaryCreator {
             while ((line = br.readLine()) != null && !line.isBlank()) {
                 String[] separatedWords = line.trim().split(",( )?");
                 for (String w: separatedWords) {
-                    if (!w.contains(" ")) {
-                        words.add(w.toLowerCase());
+                    if (!w.contains(" ")) {                 //check if the expression has two words
+                        words.add(w.toLowerCase().trim());
                     }
                 }
             }
