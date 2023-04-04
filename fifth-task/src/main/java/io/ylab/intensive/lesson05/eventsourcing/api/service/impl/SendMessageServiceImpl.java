@@ -20,17 +20,18 @@ import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:api.properties")
 public class SendMessageServiceImpl implements SendMessageService {
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendMessageServiceImpl.class);
     private final ObjectMapper objectMapper;
     private final Connection connection;
     private final Channel channel;
@@ -59,9 +60,9 @@ public class SendMessageServiceImpl implements SendMessageService {
             String message = objectMapper.writeValueAsString(new Message(p, DELETE));
             channel.basicPublish(EXCHANGE_NAME, DELETE_ROUTING_KEY, props, message.getBytes("UTF-8"));
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
-            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         }
     }
 
@@ -71,9 +72,9 @@ public class SendMessageServiceImpl implements SendMessageService {
             String message = objectMapper.writeValueAsString(new Message(p, SAVE));
             channel.basicPublish(EXCHANGE_NAME, SAVE_ROUTING_KEY, props, message.getBytes("UTF-8"));
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
-            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         }
     }
     
@@ -82,12 +83,12 @@ public class SendMessageServiceImpl implements SendMessageService {
         try {
             channel.close();
         } catch (IOException | TimeoutException ex) {
-            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         }
         try {
             connection.close();
         } catch (IOException ex) {
-            Logger.getLogger(SendMessageServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         }
     }
 
