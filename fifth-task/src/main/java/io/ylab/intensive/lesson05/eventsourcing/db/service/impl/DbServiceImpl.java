@@ -10,15 +10,16 @@ import jakarta.annotation.PreDestroy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DbServiceImpl implements DbService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbServiceImpl.class);
     private final Connection connection;
 
     @Autowired
@@ -32,7 +33,7 @@ public class DbServiceImpl implements DbService {
             setValuesForSaveStatement(ps, p);
             ps.execute();
         } catch (SQLException ex) {
-            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
+            LOGGER.error(ex.getMessage());
         }
     }
 
@@ -42,11 +43,10 @@ public class DbServiceImpl implements DbService {
             setValuesForDeleteStatement(ps, p);
             int result = ps.executeUpdate();
             if (result == 0) {
-                Logger.getLogger(DbServiceImpl.class.getName())
-                        .log(Level.INFO, "Delete was unsuccessfull. Reason: no such person with id={0}", p.getId());
+                LOGGER.info("Delete was unsuccessfull. Reason: no such person with id={0}", p.getId());
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
+            LOGGER.error(ex.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public class DbServiceImpl implements DbService {
         try {
             connection.close();
         } catch (SQLException ex) {
-            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         }
     }
 
