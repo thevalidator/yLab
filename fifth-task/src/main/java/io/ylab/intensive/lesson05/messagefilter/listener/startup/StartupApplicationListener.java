@@ -7,7 +7,6 @@ import io.ylab.intensive.lesson05.messagefilter.service.ConnectionManager;
 import io.ylab.intensive.lesson05.messagefilter.sql.Query;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,8 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath:filter.properties")
 public class StartupApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(StartupApplicationListener.class);
     private final Connection connection;
     private final String dictionaryName;
 
@@ -56,8 +56,8 @@ public class StartupApplicationListener implements ApplicationListener<ContextRe
     private void createTable() {
         try (Statement statement = connection.createStatement()) {
             statement.execute(Query.DDL);
-        } catch (SQLException ex) {
-            Logger.getLogger(StartupApplicationListener.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -67,8 +67,8 @@ public class StartupApplicationListener implements ApplicationListener<ContextRe
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             ResultSet rs = databaseMetaData.getTables(null, null, Query.TABLE_NAME, new String[]{"TABLE"});
             isExists = rs.next();
-        } catch (SQLException ex) {
-            Logger.getLogger(StartupApplicationListener.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
 
         return isExists;
@@ -90,20 +90,16 @@ public class StartupApplicationListener implements ApplicationListener<ContextRe
             }
             ps.executeBatch();
 
-        } catch (SQLException ex) {
-            Logger.getLogger(StartupApplicationListener.class.getName()).log(Level.SEVERE, ex.getMessage());
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(StartupApplicationListener.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(StartupApplicationListener.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException | IOException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
     private void clearTable() {
         try (Statement statement = connection.createStatement()) {
             statement.execute(Query.CLEAR);
-        } catch (SQLException ex) {
-            Logger.getLogger(StartupApplicationListener.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
