@@ -14,29 +14,21 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DbServiceImpl implements DbService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbServiceImpl.class);
     private final Connection connection;
 
     @Autowired
     public DbServiceImpl(DataSource dataSource) throws SQLException {
         connection = dataSource.getConnection();
-    }
-
-    @PreDestroy
-    public void preDestroy() {
-        try {
-            connection.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     @Override
@@ -48,7 +40,7 @@ public class DbServiceImpl implements DbService {
                 tables.add(rs.getString(1));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
+            LOGGER.error(ex.getMessage());
         }
 
         return tables;
@@ -68,18 +60,25 @@ public class DbServiceImpl implements DbService {
                     }
                 }
             }
-
         } catch (SQLException ex) {
-            Logger.getLogger(DbServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         }
 
         return columns;
     }
 
     private boolean exists(DatabaseMetaData databaseMetaData, String tableName) throws SQLException {
-        ResultSet resultSet = databaseMetaData.getTables(null, null, tableName, new String[]{"TABLE"});
-
+        ResultSet resultSet = databaseMetaData.getTables(null, null, tableName, new String[]{"SYSTEM TABLE", "TABLE"});
         return resultSet.next();
+    }
+    
+    @PreDestroy
+    public void preDestroy() {
+        try {
+            connection.close();
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+        }
     }
 
 }
