@@ -15,15 +15,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DbReadServiceImpl implements DbReadService {
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbReadServiceImpl.class);
     private final Connection connection;
 
     @Autowired
@@ -49,7 +50,7 @@ public class DbReadServiceImpl implements DbReadService {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(DbReadServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
+            LOGGER.error(ex.getMessage());
         }
 
         return person;
@@ -73,7 +74,7 @@ public class DbReadServiceImpl implements DbReadService {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(DbReadServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage());
+            LOGGER.error(ex.getMessage());
         }
         
         return persons;
@@ -84,7 +85,7 @@ public class DbReadServiceImpl implements DbReadService {
         try {
             connection.close();
         } catch (SQLException ex) {
-            Logger.getLogger(DbReadServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage());
         }
     }
 
