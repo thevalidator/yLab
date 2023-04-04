@@ -26,7 +26,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:api.properties")
 public class BrokerServiceImpl implements BrokerService, DeliverCallback {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BrokerServiceImpl.class);
