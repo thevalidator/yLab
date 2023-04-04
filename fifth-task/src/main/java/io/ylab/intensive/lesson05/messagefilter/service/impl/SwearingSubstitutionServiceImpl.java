@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SwearingSubstitutionServiceImpl implements SwearingSubstitutionService {
 
-    private static final Set<Character> SEPARATORS = new HashSet(Arrays.asList(' ', ',', '.', ';', '!', '?', '\n', '\r', '\t', '\f'));
+    private static final Set<Character> SEPARATORS = new HashSet(
+            Arrays.asList(' ', ',', '.', ';', '!', '?', '\n', '\r', '\t', '\f'));
     private static final String MASK_SYMBOL = "*";
     private final DbService dbService;
 
